@@ -1,0 +1,158 @@
+/* ------------------- General Reset & Base ------------------- */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    padding: 0px;
+    background-color: #f1f8f4;
+    color: #333;
+    line-height: 1.6;
+}
+
+h1, h2 {
+    color: #2e7d32;
+    margin-bottom: 15px;
+    font-weight: 700;
+}
+
+/* ------------------- Section Styling ------------------- */
+section {
+    background-color: #fff;
+    padding: 25px;
+    margin-bottom: 25px;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(46, 125, 50, 0.1);
+}
+
+/* ------------------- Coin Summary ------------------- */
+#coin-summary p {
+    font-size: 18px;
+    margin: 10px 0;
+}
+
+#cash-out-btn {
+    padding: 10px 24px;
+    font-size: 16px;
+    background-color: #2e7d32;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#cash-out-btn:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+#cash-out-btn:hover:enabled {
+    background-color: #388e3c;
+}
+
+/* ------------------- Table Styling ------------------- */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+}
+
+th, td {
+    padding: 14px 12px;
+    border: 1px solid #e0e0e0;
+    text-align: center;
+    vertical-align: middle;
+}
+
+th {
+    background-color: #e8f5e9;
+    color: #2e7d32;
+    font-weight: 600;
+}
+
+/* ------------------- Form Styling ------------------- */
+form label {
+    display: block;
+    margin-top: 10px;
+    font-weight: 600;
+    color: #1b5e20;
+}
+
+form input[type="date"],
+form input[type="number"],
+form select,
+form textarea {
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 5px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+form button[type="submit"],
+form button.btn {
+    margin-top: 15px;
+    padding: 10px 20px;
+    font-size: 15px;
+    background-color: #2e7d32;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+form button:hover {
+    background-color: #388e3c;
+}
+
+/* ----------- Navbar ------------- */
+.navbar .nav-link:hover {
+    color: yellowgreen !important;
+}
+
+#weekly-auto-pickup {
+    border-left: 6px solid #2e7d32;
+    background-color: #f0fdf4;
+}
+
+
+
+/* ------------------- Responsive Design ------------------- */
+@media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
+
+    table, thead, tbody, th, td, tr {
+        display: block;
+    }
+
+    table thead {
+        display: none;
+    }
+
+    table tr {
+        margin-bottom: 20px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background-color: white;
+        padding: 12px;
+    }
+
+    table td {
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+    }
+
+    table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        width: 45%;
+        text-align: left;
+        font-weight: 600;
+        color: #2e7d32;
+    }
+}

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<body>
+    <div th:fragment="requestDetails">
+        <table class="table table-bordered">
+            <tr>
+                <th>Request ID</th>
+                <td th:text="${request.id}">001</td>
+            </tr>
+            <tr>
+                <th>Contributor</th>
+                <td th:text="${request.contributor.user.fname + ' ' + request.contributor.user.lname}">John Doe</td>
+            </tr>
+            <tr>
+                <th>Contributor Contact</th>
+                <td th:text="${request.contributor.user.phone}">+91-9876543210</td>
+            </tr>
+            <tr>
+                <th>Pickup Address</th>
+                <td th:text="${request.pickupAddress}">123 Flower St</td>
+            </tr>
+            <tr>
+                <th>Flower Type</th>
+                <td th:text="${request.flowerType}">MIXED</td>
+            </tr>
+            <tr>
+                <th>Quantity (kg)</th>
+                <td th:text="${request.wasteAmountInKg}">15</td>
+            </tr>
+            <tr>
+                <th>Preferred Time</th>
+                <td th:text="${#temporals.format(request.expectedPickupTime, 'dd MMM yyyy HH:mm')}">10:00</td>
+            </tr>
+            <tr>
+                <th>Status</th>
+                <td th:text="${request.status}">PENDING</td>
+            </tr>
+            <tr th:if="${request.actualPickupTime != null}">
+                <th>Actual Pickup</th>
+                <td th:text="${#temporals.format(request.actualPickupTime, 'dd MMM yyyy HH:mm')}">14:30</td>
+            </tr>
+        </table>
+    </div>
+</body>
+
+</html>

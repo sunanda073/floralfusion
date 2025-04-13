@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Floral Fusion - Customer Dashboard</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <!-- Custom CSS (Optional) -->
+
+  <style>
+    .navbar {
+      background-color: rgb(50, 163, 163) !important;
+      /* Sea Green */
+    }
+
+    .navbar-nav .nav-item {
+      display: flex;
+      align-items: center;
+      padding-left: 15px;
+      /* Adds spacing between the navbar items */
+    }
+
+    .navbar-nav .nav-item .btn-logout {
+      background-color: transparent;
+      color: #007bff;
+      border: none;
+      border-radius: 25px;
+      padding: 5px 15px;
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      font-weight: bold;
+      transition: color 0.3s ease;
+      line-height: 1.5;
+      text-decoration: none;
+      /* Make sure the text isn't underlined */
+    }
+
+    .navbar-nav .nav-item .btn-logout:hover {
+      color: #0056b3;
+      /* Darker blue text color on hover */
+    }
+
+    .navbar-nav .nav-item .btn-logout:focus {
+      box-shadow: none;
+    }
+
+
+    .navbar-nav {
+      margin-left: auto;
+      /* This moves the navbar items to the right */
+    }
+
+    .navbar-brand {
+      font-weight: bold;
+      font-size: 1.5rem;
+    }
+
+    .footer {
+      background-color: #f8f9fa;
+      padding: 10px;
+      text-align: center;
+    }
+
+    .product-card img,
+    .card-img-top {
+      width: 100%;
+      /* Ensures that the image fills the width of its container */
+      height: 200px;
+      /* Fixed height for uniformity */
+      object-fit: cover;
+      /* Ensures that the image maintains its aspect ratio and is cropped if needed */
+    }
+  </style>
+
+
+</head>
+
+<body>
+
+  <!-- Header -->
+  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container">
+      <a class="navbar-brand" href="#">Floral Fusion</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          <li class="nav-item">
+            <a class="nav-link" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Shop</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">My Orders</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Cart</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#">Profile</a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-danger nav-link text-white btn-logout" href="#">Logout</a>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <div class="container my-4">
+    <div class="p-5 text-center bg-light rounded-3">
+      <h1 class="display-4">Welcome to Floral Fusion</h1>
+      <p class="lead">Explore our exclusive range of eco-friendly products.</p>
+      <a href="#products" class="btn btn-primary btn-lg">Shop Now</a>
+    </div>
+  </div>
+
+  <!-- Product Categories -->
+  <div class="container my-4">
+    <h2 class="mb-4">Product Categories</h2>
+    <div class="row">
+      <div class="col-md-3 mb-3">
+        <div class="card">
+          <img src="/images/incense-sticks.jpg" class="card-img-top" alt="Incense Sticks">
+          <div class="card-body text-center">
+            <h5 class="card-title">Incense Sticks</h5>
+            <a href="#" class="btn btn-outline-primary">Explore</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 mb-3">
+        <div class="card">
+          <img src="/images/scented-candles.jpg" class="card-img-top" alt="Scented Candles">
+          <div class="card-body text-center">
+            <h5 class="card-title">Scented Candles</h5>
+            <a href="#" class="btn btn-outline-primary">Explore</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 mb-3">
+        <div class="card">
+          <img src="/images/perfumes.jpg" class="card-img-top" alt="Perfumes">
+          <div class="card-body text-center">
+            <h5 class="card-title">Perfumes</h5>
+            <a href="#" class="btn btn-outline-primary">Explore</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-3 mb-3">
+        <div class="card">
+          <img src="/images/eco-friendly-colors.png" class="card-img-top" alt="Colors">
+          <div class="card-body text-center">
+            <h5 class="card-title">Eco-friendly colors</h5>
+            <a href="#" class="btn btn-outline-primary">Explore</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Products Section -->
+  <div class="container my-4" id="products">
+    <h2 class="mb-4">Featured Products</h2>
+    <div class="row">
+      <div class="col-md-3 mb-4">
+        <div class="card product-card">
+          <img src="/images/product-image.jpg" class="card-img-top" alt="Product">
+          <div class="card-body text-center">
+            <h5 class="card-title">Product Name</h5>
+            <p class="card-text">$20.00</p>
+            <button class="btn btn-success">Add to Cart</button>
+            <button class="btn btn-primary">Buy Now</button>
+          </div>
+        </div>
+      </div>
+      <!-- Add more product cards as needed -->
+    </div>
+  </div>
+
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>&copy; 2024 Floral Fusion. All Rights Reserved.</p>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floral Fusion Admin Dashboard</title>
+    <link rel="stylesheet" href="/css/admin_styles.css"> <!-- Link to CSS file -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <!-- Font Awesome -->
+    <script src="script.js" defer></script> <!-- Link to JS file -->
+</head>
+
+<body>
+    <!-- Sidebar Navigation -->
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <button class="toggle-btn" onclick="toggleSidebar()">☰</button>
+            <span class="dashboard-text" id="dashboard-text"></span>
+        </div>
+        <ul>
+            <ul>
+                <li><a href="#dashboard"><i class="fa-solid fa-gauge-high"></i> <span>Dashboard</span></a></li>
+                <li><a href="#collectors"><i class="fa-solid fa-people-group"></i> <span>Manage Collectors</span></a>
+                </li>
+                <li><a href="#stock"><i class="fa-solid fa-seedling"></i> <span>Flower Stock</span></a></li>
+                <li><a href="#orders"><i class="fa-solid fa-file-invoice-dollar"></i> <span>Company Orders</span></a>
+                </li>
+                <li><a href="#performance"><i class="fa-solid fa-ranking-star"></i> <span>Collector
+                            Performance</span></a></li>
+            </ul>
+
+        </ul>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content" id="main-content">
+        <header>
+            <h1>Admin Dashboard</h1>
+            <div class="profile">
+                <span class="profile-section" onclick="showAdminDetails()">
+                    <i class="fa-solid fa-user-circle profile-icon"></i>&nbsp;&nbsp;
+                    <span class="profile-text"> Profile</span>
+                </span>
+                <button class="logout-btn" onclick="window.location.href='/admin/logout'">Logout</button>
+            </div>
+        </header>
+
+        <!-- Admin Profile Modal -->
+        <div id="adminModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>Admin Details</h3>
+                </div>
+
+                <div class="modal-body">
+                    <div class="info-row">
+                        <label><strong>Name:</strong></label>
+                        <span id="adminName" th:text="${admin.user.fname + ' ' + admin.user.lname}"></span>
+                    </div>
+
+                    <div class="info-row">
+                        <label><strong>Email:</strong></label>
+                        <span id="adminEmail" th:text="${admin.user.email}"></span>
+                    </div>
+
+                    <div class="info-row">
+                        <label><strong>Phone:</strong></label>
+                        <span id="adminPhone" th:text="${admin.user.phone}"></span>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button class="edit-btn" onclick="editAdminDetails()">Edit</button>
+                    <button class="close-btn-alt" onclick="closeAdminDetails()">Close</button>
+                </div>
+            </div>
+        </div>
+
+
+
+        <section id="dashboard" class="dashboard">
+            <div class="card"><strong>Total Collectors:</strong> <span th:text="${totalCollectors}"></span></div>
+            <div class="card"><strong>Stock Available:</strong> <span th:text="${totalStock} + ' Kg'"></span></div>
+            <div class="card"><strong>Waste Collected Today:</strong>
+                <!--<span th:text="${dailyWasteCollected} + ' Kg'"></span>-->
+            </div>
+            <div class="card"><strong>Monthly Revenue:</strong> ₹<!--<span th:text="${monthlyRevenue}"></span>--></div>
+
+        </section>
+
+
+        <section id="collectors">
+            <h2>Manage Collectors</h2>
+            <button onclick="showCollectorForm()">Add New Collector</button>
+
+            <!-- Modal Form -->
+            <div id="collectorModal" class="modal" th:style="${successMessage} ? 'display: flex;' : 'display: none;'">
+
+                <div class="modal-content">
+                    <h3>Add Collector</h3>
+                    <!-- Success Message -->
+                    <div th:if="${successMessage}" class="alert alert-success">
+                        <p th:text="${successMessage}"></p>
+                    </div>
+                    <form action="/collectors/add" method="post">
+                        <input type="text" name="fname" placeholder="First Name" required>
+                        <input type="text" name="lname" placeholder="Last Name" required>
+                        <input type="email" name="email" placeholder="Email" required>
+                        <input type="text" name="phone" placeholder="Phone" required>
+                        <input type="password" name="password" placeholder="Password" required>
+                        <!-- Country Dropdown -->
+                        <select name="country" id="countrySelect" onchange="populateStates()" required>
+                            <option value="">Select Country</option>
+                            <option value="India">India</option>
+                        </select>
+
+                        <!-- State Dropdown -->
+                        <select name="state" id="stateSelect" onchange="populateCities()" required>
+                            <option value="">Select State</option>
+                        </select>
+
+                        <!-- City Dropdown -->
+                        <select name="city" id="citySelect" onchange="populateAreas()" required>
+                            <option value="">Select City</option>
+                        </select>
+
+                        <!-- Area Dropdown -->
+                        <select name="area" id="areaSelect" required>
+                            <option value="">Select Area</option>
+                        </select>
+
+                        <input type="hidden" name="adminId" th:value="${admin.adminID}" />
+
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <button type="submit">Submit</button>
+                            <button type="button" class="form-close-btn" onclick="closeCollectorForm()">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Collectors Table -->
+            <table id="collectorTable">
+                <tr>
+                    <th>Name</th>
+                    <th>Contact</th>
+                    <th>Email</th>
+                    <th>Area</th>
+                    <th>Rating</th>
+                    <th>Actions</th>
+                </tr>
+                <tr th:each="collector : ${collectors}">
+                    <td th:text="${collector.user.fname + ' ' + collector.user.lname}"></td>
+                    <td th:text="${collector.user.phone}"></td>
+                    <td th:text="${collector.user.email}"></td>
+                    <td th:text="${collector.area}"></td>
+                    <td th:text="${collector.rating}"></td>
+                    <td>
+                        <button th:attr="onclick='editCollector(' + ${collector.collectorID} + ')'">Edit</button>
+                        <button th:attr="onclick='deleteCollector(' + ${collector.collectorID} + ')'">Delete</button>
+                    </td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="stock">
+            <h2>Flower Waste Stock</h2>
+            <table>
+                <tr>
+                    <th>Flower Type</th>
+                    <th>Quantity (Kg)</th>
+                </tr>
+                <tr th:each="stock : ${flowerStockList}">
+                    <td th:text="${stock.flowerType}"></td>
+                    <td th:text="${stock.quantity}"></td>
+                </tr>
+            </table>
+        </section>
+
+
+        <section id="orders">
+            <h2>Company Orders & Payments</h2>
+            <table>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Company</th>
+                    <th>Requested (Kg)</th>
+                    <th>Status</th>
+                    <th>Amount (₹)</th>
+                    <th>Payment Status</th>
+                    <th>Invoice</th>
+                </tr>
+                <tr th:each="order : ${companyOrders}">
+                    <td th:text="${order.orderId}"></td>
+                    <td th:text="${order.companyName}"></td>
+                    <td th:text="${order.requestedQuantity}"></td>
+                    <td th:text="${order.status}"></td>
+                    <td th:text="${order.amount}"></td>
+                    <td th:text="${order.paymentStatus}"></td>
+                    <td>
+                        <a th:if="${order.paymentStatus == 'Paid'}" href="#"
+                            th:href="@{'/invoice/download/' + ${order.orderId}}">Download</a>
+                    </td>
+                </tr>
+            </table>
+        </section>
+
+        <section id="performance">
+            <h2>Collector Performance</h2>
+            <table>
+                <tr>
+                    <th>Rank</th>
+                    <th>Collector</th>
+                    <th>Total Pickups</th>
+                    <th>Waste Collected (Kg)</th>
+                    <th>Rating</th>
+                </tr>
+                <tr th:each="collector, stat : ${collectorLeaderboard}">
+                    <td th:text="${stat.index + 1}"></td>
+                    <td th:text="${collector.user.fname + ' ' + collector.user.lname}"></td>
+                    <td th:text="${collector.totalPickups}"></td>
+                    <td th:text="${collector.totalWasteCollected}"></td>
+                    <td th:text="${collector.rating}"></td>
+                </tr>
+            </table>
+        </section>
+
+        <script>
+            function showAdminDetails() {
+                document.getElementById("adminModal").style.display = "flex";
+            }
+
+            function closeAdminDetails() {
+                document.getElementById("adminModal").style.display = "none";
+            }
+
+            function toggleSidebar() {
+                const sidebar = document.getElementById('sidebar');
+                const mainContent = document.getElementById('main-content');
+                sidebar.classList.toggle('minimized');
+                mainContent.classList.toggle('minimized');
+            }
+
+            function showCollectorForm() {
+                document.getElementById("collectorModal").style.display = "flex";
+            }
+
+            function closeCollectorForm() {
+                document.getElementById("collectorModal").style.display = "none";
+            }
+
+
+            function clearForm() {
+                document.getElementById("fname").value = "";
+                document.getElementById("lname").value = "";
+                document.getElementById("email").value = "";
+                document.getElementById("phone").value = "";
+                document.getElementById("password").value = "";
+                document.getElementById("address").value = "";
+                document.getElementById("area").value = "";
+            }
+
+            document.addEventListener("DOMContentLoaded", function () {
+                let successAlert = document.querySelector(".alert-success");
+                if (successAlert) {
+                    setTimeout(() => {
+                        successAlert.style.display = "none";
+                    }, 3000);
+                }
+            });
+
+        </script>
+        <script>
+            const locationData = {
+                "India": {
+                    "West Bengal": {
+                        "Kolkata": ["Salt Lake", "Park Street", "Dumdum", "Tollygunge"],
+                        "Howrah": ["Shibpur", "Santragachi", "Belur"],
+                        "Durgapur": ["City Center", "Bidhannagar", "Benachity"]
+                    },
+                    "Maharashtra": {
+                        "Mumbai": ["Andheri", "Borivali", "Dadar", "Bandra"],
+                        "Pune": ["Shivajinagar", "Kothrud", "Hinjewadi"]
+                    }
+                }
+            };
+        
+            function populateStates() {
+                const country = document.getElementById("countrySelect").value;
+                const stateSelect = document.getElementById("stateSelect");
+                const citySelect = document.getElementById("citySelect");
+                const areaSelect = document.getElementById("areaSelect");
+        
+                stateSelect.innerHTML = '<option value="">Select State</option>';
+                citySelect.innerHTML = '<option value="">Select City</option>';
+                areaSelect.innerHTML = '<option value="">Select Area</option>';
+        
+                if (country && locationData[country]) {
+                    Object.keys(locationData[country]).forEach(state => {
+                        const option = document.createElement("option");
+                        option.value = state;
+                        option.text = state;
+                        stateSelect.appendChild(option);
+                    });
+                }
+            }
+        
+            function populateCities() {
+                const country = document.getElementById("countrySelect").value;
+                const state = document.getElementById("stateSelect").value;
+                const citySelect = document.getElementById("citySelect");
+                const areaSelect = document.getElementById("areaSelect");
+        
+                citySelect.innerHTML = '<option value="">Select City</option>';
+                areaSelect.innerHTML = '<option value="">Select Area</option>';
+        
+                if (country && state && locationData[country][state]) {
+                    Object.keys(locationData[country][state]).forEach(city => {
+                        const option = document.createElement("option");
+                        option.value = city;
+                        option.text = city;
+                        citySelect.appendChild(option);
+                    });
+                }
+            }
+        
+            function populateAreas() {
+                const country = document.getElementById("countrySelect").value;
+                const state = document.getElementById("stateSelect").value;
+                const city = document.getElementById("citySelect").value;
+                const areaSelect = document.getElementById("areaSelect");
+        
+                areaSelect.innerHTML = '<option value="">Select Area</option>';
+        
+                if (country && state && city && locationData[country][state][city]) {
+                    locationData[country][state][city].forEach(area => {
+                        const option = document.createElement("option");
+                        option.value = area;
+                        option.text = area;
+                        areaSelect.appendChild(option);
+                    });
+                }
+            }
+        </script>
+        
+
+</body>
+
+</html>

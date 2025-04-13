@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Flower Contributor Dashboard</title>
+    <link rel="stylesheet" href="/css/flowercontributor_styles.css">
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container-fluid px-4">
+            <a class="navbar-brand fw-bold" href="#">Floral Fusion</a>
+            <div class="ms-auto d-flex align-items-center gap-3">
+                <a class="nav-link text-white d-flex align-items-center" href="#" data-bs-toggle="modal"
+                    data-bs-target="#profileModal">
+                    <i class="fas fa-user-circle fs-4 me-1"></i>
+                    <span class="d-none d-sm-inline">Profile</span>
+                </a>
+                <a class="btn btn-outline-light btn-sm" th:href="@{/logout}">
+                    <i class="bi bi-box-arrow-right me-1"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Profile Modal -->
+    <div class="modal fade" id="profileModal" tabindex="-1" aria-labelledby="profileModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-success text-white">
+                    <h5 class="modal-title" id="profileModalLabel">Contributor Profile</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>Name:</strong> <span
+                            th:text="${contributor.user.fname + ' ' + contributor.user.lname}">John Doe</span></p>
+                    <p><strong>Email:</strong> <span th:text="${contributor.user.email}">john@example.com</span></p>
+                    <p><strong>Phone:</strong> <span th:text="${contributor.user.phone}">+91-9876543210</span></p>
+                    <p><strong>Location:</strong> <span
+                            th:text="${contributor.user.city + ', ' + contributor.user.state + ', ' + contributor.user.country}">City,
+                            State, Country</span></p>
+                    <p><strong>Area:</strong> <span th:text="${contributor.area}">Area 51</span></p>
+                    <p><strong>Coins Collected:</strong> <span th:text="${contributor.coins}">500</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <section id="coin-summary" class="container">
+        <div class="coin-balance-container">
+            <h2>Your Coin Balance</h2>
+            <p>Total Coins: <strong th:text="${contributor.coins}">0</strong></p>
+            <p>Equivalent Cash: <strong th:text="'₹' + ${contributor.coins * 0.5}">₹0</strong></p>
+
+            <p>You need at least <strong>50 coins</strong> to redeem cash.</p>
+
+            <button id="cash-out-btn" th:disabled="${contributor.coins} < 50" class="btn btn-primary"
+                th:classappend="${contributor.coins} < 50 ? 'disabled' : ''">
+                Redeem now!
+            </button>
+        </div>
+    </section>
+
+
+    <hr>
+
+    <!-- Weekly Auto Pickup Section -->
+    <section id="weekly-auto-pickup" class="container">
+        <h2>Weekly Auto Pickup</h2>
+
+        <div th:if="${contributor.weeklyAutoPickup}">
+            <p><i class="bi bi-calendar-check-fill text-success me-1"></i> <strong>Pickup Every Week:</strong> Yes</p>
+
+            <p class="text-success fw-bold">✅ Weekly auto pickup is enabled for you.</p>
+
+            <p><strong>Pickup Address:</strong> <span th:text="${contributor.defaultPickupAddress}"></span></p>
+            <p><strong>Flower Type:</strong> <span th:text="${contributor.defaultFlowerType}"></span></p>
+            <p><strong>Waste Amount:</strong> <span th:text="${contributor.defaultWasteAmountInKg} + ' kg'"></span></p>
+
+            <form action="/contributor/stop-weekly-pickup" method="post" class="d-inline">
+                <button type="submit" class="btn btn-danger">Stop Weekly Pickup</button>
+            </form>
+
+            <a href="#edit-weekly-prefs" class="btn btn-secondary ms-2" data-bs-toggle="collapse">Change Preferences</a>
+
+            <!-- Edit Weekly Preferences -->
+            <div class="collapse mt-3" id="edit-weekly-prefs">
+                <form action="/contributor/toggle-weekly-pickup" method="post">
+                    <input type="hidden" name="weeklyAutoPickup" value="true" />
+                    <div class="mb-2">
+                        <label for="edit-defaultAddress">Default Pickup Address:</label>
+                        <textarea id="edit-defaultAddress" name="defaultPickupAddress" class="form-control" rows="2"
+                            th:text="${contributor.defaultPickupAddress}" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-flower-type" class="form-label">Flower Type:</label>
+                        <select id="edit-flower-type" name="flowerType" class="form-control">
+                            <option th:each="type : ${T(com.floralfusion.floralfusion.enums.FlowerType).values()}"
+                                th:value="${type}" th:text="${type}"
+                                th:selected="${type.toString() == contributor.defaultFlowerType.toString()}">
+                            </option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="edit-defaultWaste" class="form-label">Default Waste Amount (kg):</label>
+                        <input type="number" class="form-control" id="edit-defaultWaste" name="defaultWasteAmountInKg"
+                            th:value="${contributor.defaultWasteAmountInKg}" step="0.1" min="0">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                </form>
+            </div>
+        </div>
+
+        <div th:if="${!contributor.weeklyAutoPickup}">
+            <form action="/contributor/toggle-weekly-pickup" method="post">
+                <div class="form-check">
+                    <input class="form-check-input" type="checkbox" id="autoPickup" name="weeklyAutoPickup">
+                    <label class="form-check-label" for="autoPickup">Enable weekly auto pickup from my address</label>
+                </div>
+
+                <div class="mb-2 mt-2">
+                    <label for="defaultAddress">Default Pickup Address:</label>
+                    <textarea id="defaultAddress" name="defaultPickupAddress" class="form-control" rows="2"
+                        placeholder="e.g. Near back gate, Temple street" required></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label for="flower-type-select" class="form-label">Flower Type:</label>
+                    <select id="flower-type-select" name="flowerType" class="form-control" required>
+                        <option value="" disabled selected>Select flower type</option>
+                        <option th:each="type : ${T(com.floralfusion.floralfusion.enums.FlowerType).values()}"
+                            th:value="${type}" th:text="${type}"></option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label for="defaultWaste" class="form-label">Default Waste Amount (kg):</label>
+                    <input type="number" class="form-control" id="defaultWaste" name="defaultWasteAmountInKg" step="0.1"
+                        min="0">
+                </div>
+
+                <button type="submit" class="btn btn-primary">Save Preference</button>
+            </form>
+        </div>
+    </section>
+
+    <hr>
+
+    <!-- Pickup History -->
+    <section id="pickup-history" class="container">
+        <h2>Your Flower Waste Pickup Requests</h2>
+
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+        <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+
+        <form method="get" action="/contributor/dashboard" class="mb-3 d-flex align-items-center">
+            <label for="statusFilter" class="me-2">Filter by Status:</label>
+            <select name="status" id="statusFilter" class="form-select w-auto me-3">
+                <option value="">All</option>
+                <option value="PENDING" th:selected="${selectedStatus == 'PENDING'}">Pending</option>
+                <option value="COMPLETED" th:selected="${selectedStatus == 'COMPLETED'}">Completed</option>
+                <option value="CANCELLED" th:selected="${selectedStatus == 'CANCELLED'}">Cancelled</option>
+            </select>
+            <button type="submit" class="btn btn-primary">Apply</button>
+        </form>
+
+        <table class="table table-bordered table-striped text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th>#</th>
+                    <th>Date</th>
+                    <th>Status</th>
+                    <th>Coins Earned</th>
+                    <th>Collector Assigned</th>
+                    <th>Collector Details</th>
+                    <th>Pickup in 24 Hrs</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="pickup, iterStat : ${pickupRequests}">
+                    <td th:text="${iterStat.index + 1}">1</td>
+                    <td th:text="${#temporals.format(pickup.requestTime, 'yyyy-MM-dd HH:mm')}">Date</td>
+                    <td th:text="${pickup.status}">Status</td>
+                    <td th:text="${pickup.coinsEarned}">0</td>
+                    <td th:text="${pickup.collector != null ? 'Assigned' : 'Not Assigned'}">Status</td>
+                    <td>
+                        <div th:if="${pickup.collector != null}">
+                            <span
+                                th:text="${pickup.collector.user.fname + ' ' + pickup.collector.user.lname}">Name</span><br />
+                            <span th:text="${pickup.collector.user.phone}">Phone</span>
+                        </div>
+                        <span th:unless="${pickup.collector != null}" class="text-muted">Not Assigned Yet</span>
+                    </td>
+                    <td>
+                        <span
+                            th:if="${pickup.status.name() == 'PENDING' and pickup.requestTime.plusHours(24).isAfter(T(java.time.LocalDateTime).now())}">
+                            <span class="badge bg-success">Yes</span>
+                        </span>
+                        <span
+                            th:unless="${pickup.status.name() == 'PENDING' and pickup.requestTime.plusHours(24).isAfter(T(java.time.LocalDateTime).now())}">
+                            <span class="badge bg-secondary">No</span>
+                        </span>
+                    </td>
+                    <td>
+                        <!-- Cancel button for PENDING -->
+                        <form th:if="${pickup.status.name() == 'PENDING'}">
+                            <button type="button" class="btn btn-danger btn-sm"
+                                th:onclick="'confirmCancel(' + ${pickup.id} + ')'">
+                                Cancel
+                            </button>
+                        </form>
+
+                        <!-- Rating form for COMPLETED pickups -->
+                        <div th:if="${pickup.status.name() == 'COMPLETED'}">
+                            <div th:if="${pickup.rating == null}">
+                                <form th:action="@{/contributor/rate-collector}" method="post">
+                                    <input type="hidden" name="pickupId" th:value="${pickup.id}" />
+                                    <div class="mb-2">
+                                        <label>Rate the Collector:</label>
+                                        <div class="d-flex gap-3">
+                                            <label><input type="radio" name="rating" value="1" required /> 1</label>
+                                            <label><input type="radio" name="rating" value="2" /> 2</label>
+                                            <label><input type="radio" name="rating" value="3" /> 3</label>
+                                            <label><input type="radio" name="rating" value="4" /> 4</label>
+                                            <label><input type="radio" name="rating" value="5" /> 5</label>
+                                        </div>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary btn-sm">Submit Rating</button>
+                                </form>
+                            </div>
+                            <div th:unless="${pickup.rating == null}">
+                                <p><strong>Rating Given:</strong> <span th:text="${pickup.rating}">5</span> ⭐</p>
+                            </div>
+                        </div>
+
+                        <!-- Fallback for all other statuses -->
+                        <div th:if="${pickup.status.name() != 'PENDING' and pickup.status.name() != 'COMPLETED'}">
+                            <span class="text-muted">No Actions</span>
+                        </div>
+
+                    </td>
+                </tr>
+                <tr th:if="${pickupRequests != null and #lists.isEmpty(pickupRequests)}">
+                    <td colspan="8" class="text-center text-muted">No pickup requests found.</td>
+                </tr>
+            </tbody>
+        </table>
+    </section>
+
+
+    <!-- Cancel Confirmation Modal -->
+    <!-- Cancel Confirmation Modal -->
+    <div class="modal fade" id="cancelConfirmModal" tabindex="-1" aria-labelledby="cancelConfirmLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <form id="cancelForm" method="post">
+                    <div class="modal-header bg-danger text-white">
+                        <h5 class="modal-title" id="cancelConfirmLabel">Confirm Cancellation</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to cancel this pickup request?</p>
+                        <div class="mb-3">
+                            <label for="cancelReason" class="form-label">Select a reason for cancellation:</label>
+                            <select class="form-select" id="cancelReason" name="reason" required>
+                                <option value="" disabled selected>Select reason</option>
+                                <option value="Not enough waste today">Not enough waste today</option>
+                                <option value="Collector delay">Collector delay</option>
+                                <option value="Changed my mind">Changed my mind</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="submit" class="btn btn-danger">Yes, Cancel</button>
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">No</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+
+    <hr>
+
+    <!-- New Pickup Request -->
+    <section id="new-request" class="container">
+        <h2>Request a New Flower Waste Pickup</h2>
+        <form id="pickup-request-form" action="/contributor/pickup-request" method="post">
+            <div class="mb-3">
+                <label for="new-flower-type" class="form-label">Type of Flower Waste:</label>
+                <select id="new-flower-type" name="flowerType" class="form-select" required>
+                    <option value="" disabled selected>Select flower type</option>
+                    <option th:each="type : ${T(com.floralfusion.floralfusion.enums.FlowerType).values()}"
+                        th:value="${type}" th:text="${type}">Type</option>
+                </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="waste-amount" class="form-label">Approximate Waste Amount (in kg):</label>
+                <input type="number" id="waste-amount" name="waste-amount" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="pickup-address" class="form-label">Pickup Address:</label>
+                <textarea id="pickup-address" name="pickup-address" class="form-control" rows="2"
+                    placeholder="E.g., Back gate, near Shiva temple, Flower Road"></textarea>
+            </div>
+
+            <p class="text-muted">📦 Your flower waste will be picked up within 24 hours.</p>
+            <button type="submit" class="btn btn-success">Submit Pickup Request</button>
+        </form>
+    </section>
+
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Cancel Modal Script -->
+    <script>
+        function confirmCancel(pickupId) {
+            const form = document.getElementById('cancelForm');
+            form.action = `/contributor/cancel/${pickupId}`;
+
+            // Reset reason select
+            document.getElementById('cancelReason').selectedIndex = 0;
+
+            const modal = new bootstrap.Modal(document.getElementById('cancelConfirmModal'));
+            modal.show();
+        }
+
+        document.getElementById('cancelForm').addEventListener('submit', function (e) {
+            const reason = document.getElementById('cancelReason').value;
+            if (!reason) {
+                e.preventDefault();
+                alert("Please select a cancellation reason.");
+            }
+        });
+    </script>
+
+    <script>
+        // Auto-hide alerts after 4 seconds
+        setTimeout(() => {
+            const alertSuccess = document.querySelector('.alert-success');
+            const alertError = document.querySelector('.alert-danger');
+            if (alertSuccess) alertSuccess.remove();
+            if (alertError) alertError.remove();
+        }, 4000); // 4 seconds
+    </script>
+
+
+</body>
+
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Schedule Flower Waste Collection</title>
+    <link rel="stylesheet" href="/css/schedule_styles.css">
+</head>
+
+<body>
+    <!-- Header -->
+    <header class="header">
+        <h1>Schedule Flower Waste Collection</h1>
+        <nav class="nav">
+            <a href="/company" class="button">Back to Dashboard</a>
+        </nav>
+    </header>
+
+    <!-- Form Section -->
+    <main class="container">
+        <section class="section">
+            <h2>Weekly Collection Schedule</h2>
+            <form action="/submit-collection" method="post">
+
+                <!-- Weekly Collection -->
+                <label for="weeklyAmount">Amount of Flower Waste (kg/week):</label>
+                <input type="number" id="weeklyAmount" name="weeklyAmount" min="1" required>
+
+                <label for="collectionDay">Select Collection Day:</label>
+                <select id="collectionDay" name="collectionDay" required>
+                    <option value="Monday">Monday</option>
+                    <option value="Tuesday">Tuesday</option>
+                    <option value="Wednesday">Wednesday</option>
+                    <option value="Thursday">Thursday</option>
+                    <option value="Friday">Friday</option>
+                    <option value="Saturday">Saturday</option>
+                    <option value="Sunday">Sunday</option>
+                </select>
+
+                <label for="collectionTime">Preferred Time:</label>
+                <input type="time" id="collectionTime" name="collectionTime" required>
+
+                <button type="submit" class="button">Submit Weekly Schedule</button>
+            </form>
+        </section>
+
+        <!-- Urgent Request -->
+        <section class="section">
+            <h2>Urgent Collection Request</h2>
+            <form action="/submit-urgent-request" method="post">
+
+                <label for="urgentAmount">Amount of Flower Waste (kg):</label>
+                <input type="number" id="urgentAmount" name="urgentAmount" min="1" required>
+
+                <label for="urgentDate">Preferred Collection Date:</label>
+                <input type="date" id="urgentDate" name="urgentDate" required>
+
+                <label for="urgentTime">Preferred Collection Time:</label>
+                <input type="time" id="urgentTime" name="urgentTime" required>
+
+                <label for="reason">Reason for Urgency:</label>
+                <textarea id="reason" name="reason" rows="4" required></textarea>
+
+                <button type="submit" class="button">Submit Urgent Request</button>
+            </form>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>&copy; 2023 Floral Fusion. All rights reserved.</p>
+    </footer>
+
+</body>
+
+</html>

@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Floral Fusion - Auth</title>
+    <link rel="stylesheet" href="/css/login_styles.css">
+</head>
+
+<body>
+    <div class="container">
+        <div class="form-container" id="loginForm">
+            <h2>Login</h2>
+            <!-- Display success message -->
+            <div th:if="${message}" class="success-message" id="successMessage">
+                <p th:text="${message}"></p>
+            </div>
+
+
+            <form action="/user/login" method="post">
+                <label for="loginEmail">Email:</label>
+                <input type="email" id="loginEmail" name="email" required>
+
+                <label for="loginPassword">Password:</label>
+                <input type="password" id="loginPassword" name="password" required>
+
+                <button type="submit">Login</button>
+                <p>Don't have an account? <a href="#" onclick="toggleForm()">Sign Up</a></p>
+            </form>
+        </div>
+
+        <div class="form-container hidden" id="signupForm">
+            <h2>Sign Up</h2>
+            <form action="signup" method="POST">
+                <label for="signupUserType">User Type:</label>
+                <select id="signupUserType" name="userType" required onchange="handleUserTypeChange()">
+                    <option value="" default>Select</option>
+                    <option value="contributor">Contributor</option>
+                    <option value="customer">Customer</option>
+                    <option value="company">Company Representative</option>
+                </select>
+
+                <!-- Common Fields (User entity) -->
+                <label for="signupFname">First Name:</label>
+                <input type="text" id="signupFname" name="fname" required>
+
+                <label for="signupLname">Last Name:</label>
+                <input type="text" id="signupLname" name="lname" required>
+
+                <label for="signupEmail">Email:</label>
+                <input type="email" id="signupEmail" name="email" required>
+
+                <label for="signupPhone">Phone:</label>
+                <input type="text" id="signupPhone" name="phone" required>
+
+                <label for="country">Country:</label>
+                <select id="country" name="country" required onchange="populateStates()">
+                    <option value="">Select Country</option>
+                    <option value="India">India</option>
+                </select>
+
+                <label for="state">State:</label>
+                <select id="state" name="state" required onchange="populateCities()">
+                    <option value="">Select State</option>
+                </select>
+
+                <label for="city">City:</label>
+                <select id="city" name="city" required onchange="handleCityChange()">
+                    <option value="">Select City</option>
+                </select>
+
+
+                <label for="signupPassword">Password:</label>
+                <input type="password" id="signupPassword" name="password" required>
+
+                <!-- Dynamic Fields for Each User Type -->
+                <div id="dynamicFields"></div>
+
+                <button type="submit">Sign Up</button>
+                <p>Already have an account? <a href="#" onclick="toggleForm()">Login</a></p>
+            </form>
+        </div>
+
+        <script>
+            function handleUserTypeChange() {
+                updateDynamicFields();
+            }
+
+            function handleCityChange() {
+                updateDynamicFields();
+            }
+
+            function updateDynamicFields() {
+                const userType = document.getElementById('signupUserType').value;
+                const city = document.getElementById('city').value;
+                const dynamicFields = document.getElementById('dynamicFields');
+
+                dynamicFields.innerHTML = '';
+
+                if (userType === 'contributor') {
+                    dynamicFields.innerHTML += `
+                <label for="signupType">Contributor Type:</label>
+                <select id="signupType" name="type" required>
+                    <option value="religious_places">Temples, Mosques, and Other Religious Places</option>
+                    <option value="market">Market</option>
+                    <option value="event">Event</option>
+                    <option value="hotels_restaurants">Hotels & Restaurants</option>
+                    <option value="gardens_nurseries">Garden & Nurseries</option>
+                    <option value="households">Households</option>
+                    <option value="others" selected>Others</option>
+                </select>
+            `;
+
+                    if (city === 'Kolkata') {
+                        dynamicFields.innerHTML += `
+                    <label for="signupArea">Area:</label>
+                    <select id="signupArea" name="area" required>
+                        <option value="">Select Area</option>
+                        <option value="Salt Lake">Salt Lake</option>
+                        <option value="Howrah">Howrah</option>
+                        <option value="Park Street">Park Street</option>
+                        <option value="Tollygunge">Tollygunge</option>
+                        <option value="Dumdum">Dumdum</option>
+                    </select>
+                `;
+                    }
+                }
+
+                if (userType === 'company') {
+                    dynamicFields.innerHTML += `
+                <label for="signupCompanyName">Company Name:</label>
+                <input type="text" id="signupCompanyName" name="companyName" required>
+
+                <label for="signupCompanyAddress">Company Address:</label>
+                <input type="text" id="signupCompanyAddress" name="companyAddress" required>
+
+                <label for="signupPosition">Position/Role:</label>
+                <input type="text" id="signupPosition" name="position" required>
+
+                <label for="signupCompanyPhone">Company Phone:</label>
+                <input type="text" id="signupCompanyPhone" name="companyPhone" required>
+
+                <label for="signupWebsite">Website (optional):</label>
+                <input type="text" id="signupWebsite" name="website">
+
+                <label for="signupTaxId">Tax ID (optional):</label>
+                <input type="text" id="signupTaxId" name="taxId">
+            `;
+                }
+            }
+
+            window.addEventListener('DOMContentLoaded', () => {
+                const messageBox = document.querySelector('.success-message');
+                if (messageBox) {
+                    setTimeout(() => {
+                        messageBox.style.display = 'none';
+                    }, 5000);
+                }
+            });
+
+
+
+            function toggleForm() {
+                document.getElementById('loginForm').classList.toggle('hidden');
+                document.getElementById('signupForm').classList.toggle('hidden');
+            }
+
+
+
+            const stateData = {
+                "India": {
+                    "West Bengal": ["Kolkata", "Howrah", "Siliguri", "Asansol"],
+                    "Maharashtra": ["Mumbai", "Pune", "Nagpur"],
+                    "Karnataka": ["Bengaluru", "Mysore", "Mangalore"]
+                    // Add more states and cities
+                }
+            };
+
+            function populateStates() {
+                const countrySelect = document.getElementById("country");
+                const stateSelect = document.getElementById("state");
+                const citySelect = document.getElementById("city");
+
+                const country = countrySelect.value;
+                stateSelect.innerHTML = '<option value="">Select State</option>';
+                citySelect.innerHTML = '<option value="">Select City</option>';
+
+                if (stateData[country]) {
+                    Object.keys(stateData[country]).forEach(state => {
+                        const option = document.createElement("option");
+                        option.value = state;
+                        option.textContent = state;
+                        stateSelect.appendChild(option);
+                    });
+                }
+            }
+
+            function populateCities() {
+                const country = document.getElementById("country").value;
+                const state = document.getElementById("state").value;
+                const citySelect = document.getElementById("city");
+
+                citySelect.innerHTML = '<option value="">Select City</option>';
+                if (stateData[country] && stateData[country][state]) {
+                    stateData[country][state].forEach(city => {
+                        const option = document.createElement("option");
+                        option.value = city;
+                        option.textContent = city;
+                        citySelect.appendChild(option);
+                    });
+                }
+            }
+        </script>
+
+</body>
+
+</html>
