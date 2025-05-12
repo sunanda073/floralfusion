@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Customer Orders - Floral Fusion</title>
+    <link rel="stylesheet" href="/css/customer_order_styles.css">
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="container navbar-content">
+            <div class="logo">🌿 Floral Fusion</div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="#">Home</a></li>
+                    <li><a href="/customer/cart">My Cart</a></li>
+                    <li><a href="/customer/orders">Orders</a></li> <!-- Active link for Orders -->
+                    <li><a href="#">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container"></main>
+
+        <!-- Orders Table -->
+        <section class="orders-section">
+            <h2 class="section-heading">Your Orders</h2>
+
+            <!-- Check if there are any orders -->
+            <div th:if="${orders.isEmpty()}">
+                <p>No orders found.</p>
+            </div>
+
+            <div th:if="${not orders.isEmpty()}">
+                <table class="orders-table">
+                    <thead>
+                        <tr>
+                            <th>Serial No.</th> <!-- Changed from Order ID to Serial No. -->
+                            <th>Order Date</th>
+                            <th>Total Amount</th>
+                            <th>Status</th>
+                            <th>Shipping Address</th>
+                            <th>Items</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="order, iterStat : ${orders}">
+                            <td th:text="${iterStat.index + 1}"></td> <!-- Displaying serial number -->
+                            <td th:text="${order.orderDate}"></td>
+                            <td th:text="${order.totalAmount}"></td>
+                            <td th:text="${order.orderStatus}"></td>
+                            <td th:text="${order.shippingAddress}"></td>
+                            <td>
+                                <ul>
+                                    <li th:each="item : ${order.orderItems}">
+                                        <div class="order-item">
+                                            <img th:src="@{'/' + ${item.product.imageUrl}}" alt="Product Image" class="product-image" />
+                                            <div>
+                                                <p th:text="${item.product.productName} + ' - ' + ${item.quantity} + ' x ₹' + ${item.unitPrice}"></p>
+                                            </div>
+                                        </div>
+                                    </li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Floral Fusion. All rights reserved.</p>
+        </div>
+    </footer>
+
+</body>
+
+</html>

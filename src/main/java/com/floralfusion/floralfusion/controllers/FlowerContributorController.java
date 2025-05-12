@@ -28,40 +28,6 @@ public class FlowerContributorController {
         this.pickupRequestService = pickupRequestService;
     }
 
-    // @GetMapping("/contributor")
-    // public String showContributorPage(Model model, @RequestParam("email") String
-    // email,
-    // @RequestParam(value = "success", required = false) String success) {
-    // if ("true".equals(success)) {
-    // model.addAttribute("message", "Your Contribution request has been received,
-    // Thank you.");
-    // }
-
-    // // Fetch contributor directly
-    // FlowerContributor contributor =
-    // contributorService.getContributorByEmail(email);
-
-    // if (contributor == null) {
-    // model.addAttribute("error", "Contributor not found.");
-    // return "error";
-    // }
-
-    // // Use contributorId directly
-    // Long contributorId = contributor.getContributorID();
-
-    // // Add both contributor and user to the model
-    // model.addAttribute("contributor", contributor);
-    // model.addAttribute("user", contributor.getUser());
-
-    // // Fetch past contributions
-    // // List<FlowerWaste> contributions =
-    // contributorService.getContributorContributions(contributorId);
-    // // model.addAttribute("contributions", contributions);
-
-    // return "flowercontributor_view";
-
-    // }
-
     @GetMapping("/contributor")
     public String showContributorPage(Model model,
             HttpSession session,
@@ -87,15 +53,13 @@ public class FlowerContributorController {
             return "error";
         }
 
-        // ✅ Fetch pickup requests and add to model
         List<PickupRequest> pickupRequests = pickupRequestService.findAllByContributorOrderByRequestTimeDesc(contributor);
         model.addAttribute("pickupRequests", pickupRequests);
 
-        // Add contributor + user info
         model.addAttribute("contributor", contributor);
         model.addAttribute("user", contributor.getUser());
 
-        return "flowercontributor_view"; // your Thymeleaf template
+        return "flowercontributor_view"; 
     }
 
 }

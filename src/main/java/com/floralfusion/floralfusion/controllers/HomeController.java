@@ -1,5 +1,9 @@
 package com.floralfusion.floralfusion.controllers;
 
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
 //import java.util.List;
 
 //import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +14,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.floralfusion.floralfusion.entities.CollectionRequest;
+import com.floralfusion.floralfusion.entities.Product;
+import com.floralfusion.floralfusion.repositories.ProductRepository;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -19,11 +25,13 @@ import jakarta.servlet.http.HttpSession;
 @Controller
 public class HomeController {
 
-    // @Autowired
-    // private ProductService productService;
+    @Autowired
+    private ProductRepository productRepository;
 
     @GetMapping("/") // http://localhost:8090
     public String home(Model model) {
+        List<Product> products = productRepository.findAll();
+        model.addAttribute("products", products);
         return "home";
     }
 

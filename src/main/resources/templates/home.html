@@ -47,7 +47,8 @@
                         </a>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="loginDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        <a class="nav-link dropdown-toggle" href="#" id="loginDropdown" role="button"
+                            data-bs-toggle="dropdown" aria-expanded="false">
                             <i class="bi bi-person"></i> Login
                         </a>
                         <ul class="dropdown-menu" aria-labelledby="loginDropdown">
@@ -55,7 +56,7 @@
                             <li><a class="dropdown-item" href="/login">Non-Admin</a></li>
                         </ul>
                     </li>
-                    
+
                 </ul>
             </nav>
         </div>
@@ -68,7 +69,7 @@
            height: 70vh; display: flex; align-items: center; padding: 30px 0;">
         <div class="container">
             <h1 class="display-4">
-                Transforming flower waste <br> 
+                Transforming flower waste <br>
                 into wonders <br>
                 for a greener tomorrow.
             </h1>
@@ -78,107 +79,118 @@
     </section>
 
     <!-- Featured Products Section -->
-    <section id="products" class="featured-products py-5">
-        <div class="container">
-            <h2 class="text-center">Featured Products</h2>
-            <div class="row">
-                <!-- Example Product Card 1 -->
-                <div class="col-md-4">
-                    <div class="card mb-4">
-                        <img src="/images/product-image.jpg" class="card-img-top" alt="Product Name 1">
-                        <div class="card-body">
-                            <h5 class="card-title">Product Name 1</h5>
-                            <p class="card-text">Brief description of the product 1.</p>
-                            <a href="#" class="btn btn-primary">View Product</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Example Product Card 2 -->
-                <div class="col-md-4">
-                    <div class="card mb-4">
-                        <img src="/images/product-image.jpg" class="card-img-top" alt="Product Name 2">
-                        <div class="card-body">
-                            <h5 class="card-title">Product Name 2</h5>
-                            <p class="card-text">Brief description of the product 2.</p>
-                            <a href="#" class="btn btn-primary">View Product</a>
-                        </div>
-                    </div>
-                </div>
-                <!-- Example Product Card 3 -->
-                <div class="col-md-4">
-                    <div class="card mb-4">
-                        <img src="/images/product-image.jpg" class="card-img-top" alt="Product Name 3">
-                        <div class="card-body">
-                            <h5 class="card-title">Product Name 3</h5>
-                            <p class="card-text">Brief description of the product 3.</p>
-                            <a href="#" class="btn btn-primary">View Product</a>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- Dynamic Product Section -->
+    <section class="product-grid" id="products">
+        <div th:each="product, iterStat : ${products}" th:if="${iterStat.index} < 4" class="product-card">
+            <img th:src="@{${product.imageUrl}}" alt="Product Image">
+            <h3 th:text="${product.productName}">Product Name</h3>
+            <p th:text="${product.description}">Product Description</p>
+            <div class="price" th:text="'₹' + ${product.price}">₹0.00</div>
         </div>
     </section>
+
 
     <!-- About Us Section -->
     <section id="about" class="introduction py-5">
         <div class="container">
-            <h2 class="text-center">About Us</h2>
-            <p class="text-center">At Floral Fusion, we are dedicated to reducing floral waste by transforming it into
-                beautiful, eco-friendly products like incense sticks and scented candles.</p>
-            <ol class="text-center">
-                <li>Collect Flower Waste: We gather unwanted floral waste from local sources.</li>
-                <li>Manufacturers Produce Products: Our partners create stunning items from the collected waste.</li>
-                <li>Shop Products: Customers can purchase unique, eco-friendly products through our platform.</li>
-            </ol>
+            <h2 class="text-center mb-4">About Us</h2>
+            <p class="text-center mb-4">At Floral Fusion, we are passionate about reducing floral waste and transforming
+                it into beautiful, eco-friendly products like incense sticks and scented candles. Our mission is to
+                promote sustainability and create a greener tomorrow.</p>
 
-            <div class="row text-center mt-5">
-                <div class="col-md-4">
+            <div class="row text-center">
+                <div class="col-md-4 mb-4">
                     <div class="feature bg-light p-4 rounded">
                         <h4>Eco-Friendly Products</h4>
+                        <p>Our products are made entirely from upcycled floral waste, turning what would be discarded
+                            into something beautiful.</p>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 mb-4">
                     <div class="feature bg-light p-4 rounded">
                         <h4>Easy Ordering Process</h4>
+                        <p>Browse our range of products, place your order, and have them delivered directly to your
+                            doorstep in no time.</p>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 mb-4">
                     <div class="feature bg-light p-4 rounded">
-                        <h4>Support Local Suppliers</h4>
+                        <h4>Supporting Local Artisans</h4>
+                        <p>We collaborate with local artisans and manufacturers, supporting sustainable business
+                            practices while providing them with fair compensation.</p>
                     </div>
                 </div>
             </div>
         </div>
     </section>
-
-
 
     <!-- Testimonials Section -->
-    <section id="test" class="testimonials py-5">
+    <section class="testimonials" id="test">
         <div class="container">
-            <h2 class="text-center">What Our Customers Say</h2>
+            <h2 class="text-center">What Our Clients Say</h2>
             <div class="row">
-                <div class="col-md-4">
-                    <blockquote class="blockquote text-center">
-                        <p class="mb-0">"Amazing products! Highly recommend!"</p>
-                        <footer class="blockquote-footer">Customer Name</footer>
+                <!-- Testimonial Card 1 -->
+                <article class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">
+                            <i class="fa fa-user"></i> <!-- Font Awesome Profile Icon -->
+                        </div>
+                        <div class="testimonial-info">
+                            <h4 class="testimonial-name">John Doe</h4>
+                            <p class="testimonial-position">CEO, Example Corp.</p>
+                        </div>
+                    </div>
+                    <blockquote class="testimonial-text">
+                        "Floral Fusion's services have transformed our company's waste management practices. The
+                        collection process is smooth, and the platform is easy to use. Highly recommended!"
                     </blockquote>
-                </div>
-                <div class="col-md-4">
-                    <blockquote class="blockquote text-center">
-                        <p class="mb-0">"Great service and eco-friendly!"</p>
-                        <footer class="blockquote-footer">Customer Name</footer>
+                    <footer class="testimonial-footer">
+                        <i class="fa fa-quote-right"></i>
+                    </footer>
+                </article>
+                <!-- Testimonial Card 2 -->
+                <article class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">
+                            <i class="fa fa-user"></i> <!-- Font Awesome Profile Icon -->
+                        </div>
+                        <div class="testimonial-info">
+                            <h4 class="testimonial-name">Jane Smith</h4>
+                            <p class="testimonial-position">Founder, EcoWaste Solutions</p>
+                        </div>
+                    </div>
+                    <blockquote class="testimonial-text">
+                        "The dedication and professionalism of Floral Fusion’s team is unparalleled. Their ability to
+                        handle large-scale waste pickups with such efficiency is commendable."
                     </blockquote>
-                </div>
-                <div class="col-md-4">
-                    <blockquote class="blockquote text-center">
-                        <p class="mb-0">"I love their products!"</p>
-                        <footer class="blockquote-footer">Customer Name</footer>
+                    <footer class="testimonial-footer">
+                        <i class="fa fa-quote-right"></i>
+                    </footer>
+                </article>
+                <!-- Testimonial Card 3 -->
+                <article class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="testimonial-avatar">
+                            <i class="fa fa-user"></i> <!-- Font Awesome Profile Icon -->
+                        </div>
+                        <div class="testimonial-info">
+                            <h4 class="testimonial-name">Michael Lee</h4>
+                            <p class="testimonial-position">Operations Manager, Green Earth Inc.</p>
+                        </div>
+                    </div>
+                    <blockquote class="testimonial-text">
+                        "Working with Floral Fusion has been a game-changer. Their attention to detail and commitment to
+                        environmental sustainability are exactly what we were looking for."
                     </blockquote>
-                </div>
+                    <footer class="testimonial-footer">
+                        <i class="fa fa-quote-right"></i>
+                    </footer>
+                </article>
             </div>
         </div>
     </section>
+
+
 
     <!-- Contact Us Section -->
     <section id="contact" class="contact-us py-5">

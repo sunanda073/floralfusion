@@ -26,10 +26,10 @@ public class OrderItem {
 
     @ManyToOne
     @JoinColumn(name = "orderID")
-    private Order order;  // Relationship with Order
+    private CustomerOrder order;  // Relationship with Order
 
     // Constructors
-    public OrderItem(int quantity, double unitPrice, Product product, Order order) {
+    public OrderItem(int quantity, double unitPrice, Product product, CustomerOrder order) {
         this.quantity = quantity;
         this.unitPrice = unitPrice;
         this.totalPrice = unitPrice * quantity; // Calculate totalPrice
@@ -84,11 +84,11 @@ public class OrderItem {
         this.product = product;
     }
 
-    public Order getOrder() {
+    public CustomerOrder getOrder() {
         return order;
     }
 
-    public void setOrder(Order order) {
+    public void setOrder(CustomerOrder order) {
         this.order = order;
     }
 }

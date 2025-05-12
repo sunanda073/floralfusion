@@ -1,6 +1,7 @@
 package com.floralfusion.floralfusion.services;
 
 import com.floralfusion.floralfusion.entities.Company;
+import com.floralfusion.floralfusion.entities.User;
 import com.floralfusion.floralfusion.repositories.CompanyRepository;
 
 import jakarta.servlet.http.HttpSession;
@@ -14,6 +15,11 @@ public class CompanyService {
 
     private final CompanyRepository companyRepository;
     private final HttpSession session;
+
+    public Company findByUser(User user) {
+        // Fetch company based on user
+        return companyRepository.findByUser(user);
+    }
 
     public CompanyService(CompanyRepository companyRepository, HttpSession session) {
         this.companyRepository = companyRepository;

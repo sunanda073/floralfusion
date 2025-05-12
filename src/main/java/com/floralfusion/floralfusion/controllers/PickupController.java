@@ -43,50 +43,36 @@ public class PickupController {
             @RequestParam(value = "pickup-address", required = false) String pickupAddress,
             HttpSession session,
             Model model) {
-        // Retrieve the User object from the session
+
         User user = (User) session.getAttribute("user");
 
-        // Check if the user is logged in
         if (user == null) {
             model.addAttribute("error", "User not logged in.");
-            return "error"; // Return an error view or redirect to the login page
+            return "error"; 
         }
 
-        // Retrieve the associated FlowerContributor using the user object
         FlowerContributor contributor = flowerContributorRepository.findByUser(user);
 
-        // Check if the contributor exists
+
         if (contributor == null) {
             model.addAttribute("error", "Contributor not found.");
-            return "error"; // Return an error view or handle accordingly
+            return "error"; 
         }
 
-        // Convert the flowerType string to the FlowerType enum
         FlowerType type;
         try {
-            type = FlowerType.valueOf(flowerType.toUpperCase()); // Ensure case consistency
+            type = FlowerType.valueOf(flowerType.toUpperCase()); 
         } catch (IllegalArgumentException e) {
             model.addAttribute("error", "Invalid flower type specified.");
-            return "error"; // Return an error view or handle accordingly
+            return "error"; 
         }
 
-        // Create the pickup request
+
         pickupService.createRequest(contributor, wasteAmount, pickupAddress, type);
 
         return "redirect:/contributor";
     }
 
-    // Cancel a pickup request
-    // @PostMapping("/cancel/{requestId}")
-    // public String cancelPickupRequest(@PathVariable("requestId") Long requestId,
-    // Principal principal) {
-    // FlowerContributor contributor =
-    // contributorService.getByEmail(principal.getName());
-
-    // pickupService.cancelRequest(requestId, contributor);
-
-    // return "redirect:/contributor/dashboard";
-    // }
 
     @PostMapping("/toggle-weekly-pickup")
     public String toggleWeeklyAutoPickup(
@@ -97,7 +83,6 @@ public class PickupController {
             HttpSession session,
             Model model) {
 
-        // Get logged-in user from session
         User user = (User) session.getAttribute("user");
 
         if (user == null) {
@@ -125,28 +110,24 @@ public class PickupController {
 
     @PostMapping("/stop-weekly-pickup")
     public String stopWeeklyAutoPickup(HttpSession session, Model model) {
-        // Retrieve the User object from the session
+        
         User user = (User) session.getAttribute("user");
 
-        // Check if the user is logged in
         if (user == null) {
             model.addAttribute("error", "User not logged in.");
-            return "error"; // Return an error view or handle accordingly
+            return "error"; 
         }
 
-        // Retrieve the associated FlowerContributor using the user object
+
         FlowerContributor contributor = flowerContributorRepository.findByUser(user);
 
-        // Check if the contributor exists
         if (contributor == null) {
             model.addAttribute("error", "Contributor not found.");
-            return "error"; // Return an error view or handle accordingly
+            return "error"; 
         }
 
-        // Update the contributor's weekly auto pickup settings
         contributor.setWeeklyAutoPickup(false);
 
-        // Save the updated contributor
         contributorService.save(contributor);
 
         return "redirect:/contributor";
@@ -159,17 +140,14 @@ public class PickupController {
 
         User user = (User) session.getAttribute("user");
 
-        // Check if the user is logged in
         if (user == null) {
             model.addAttribute("error", "User not logged in.");
-            return "error"; // Return an error view or handle accordingly
+            return "error"; 
         }
-
-        // Retrieve the associated FlowerContributor using the user object
         FlowerContributor contributor = flowerContributorRepository.findByUser(user);
 
         if (contributor == null) {
-            return "redirect:/login"; // or however you're handling unauthorized access
+            return "redirect:/login";
         }
 
         List<PickupRequest> pickupRequests;
@@ -183,18 +161,17 @@ public class PickupController {
         model.addAttribute("pickupRequests", pickupRequests);
         model.addAttribute("selectedStatus", status);
 
-        return "flowercontributor_view"; // Thymeleaf page
+        return "flowercontributor_view"; 
     }
 
     @PostMapping("/rate-collector")
     public String rateCollector(@RequestParam("pickupId") Long pickupId, @RequestParam("rating") int rating) {
-        // Retrieve the pickup request by ID
+       
         PickupRequest pickupRequest = pickupService.getPickupRequestById(pickupId);
 
-        // Store the rating (assuming you have a method to save the rating)
+
         collectorService.saveRating(pickupRequest, rating);
 
-        // Optionally, you can redirect to the dashboard or show a success message
         return "redirect:/contributor";
     }
 

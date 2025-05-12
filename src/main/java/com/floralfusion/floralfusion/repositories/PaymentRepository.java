@@ -11,9 +11,11 @@ import org.springframework.stereotype.Repository;
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     // Find payment by order ID
-    Payment findByOrderOrderID(Long orderId);
+    Payment findByCompanyOrder_OrderId(Long orderId);
 
+    Payment findByCustomerOrder_OrderID(Long orderId);
     // Find payment by payment status
     List<Payment> findByPaymentStatus(String paymentStatus);
+
 
 }

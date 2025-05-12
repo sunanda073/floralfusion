@@ -6,9 +6,9 @@ public class SignupRequest {
     private String password;
     private String phone;
     private String role;
-    private String address;  // Customer-specific
-    private String companyName;  // Manufacturer-specific
-    private String companyAddress;  // Manufacturer-specific
+    private String address;  
+    private String companyName;  
+    private String companyAddress;  
 
     // Getters and Setters
     public String getEmail() {

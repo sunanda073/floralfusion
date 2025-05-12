@@ -26,29 +26,31 @@ public class Company {
     private String website;
     private String taxID;
 
+    private String area; // Add the area field
+
     @OneToOne
     @JoinColumn(name = "userID")
     private User user;
 
-    // One-to-many relationship with Product entity (Company produces many products)
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Product> productHistory;
 
     @OneToMany(mappedBy = "company", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<CollectionRequest> collectionRequests;
 
-    //No argument constructor
+    // No argument constructor
     public Company() {
     }
 
     // Constructor with parameters
-    public Company(String companyName, String companyAddress, String position, String companyPhone, String industryType, String website, String taxID, User user) {
+    public Company(String companyName, String companyAddress, String position, String companyPhone, String website, String taxID, String area, User user) {
         this.companyName = companyName;
         this.companyAddress = companyAddress;
         this.position = position;
         this.companyPhone = companyPhone;
         this.website = website;
         this.taxID = taxID;
+        this.area = area; // Initialize area
         this.user = user;
     }
 
@@ -109,6 +111,14 @@ public class Company {
         this.taxID = taxID;
     }
 
+    public String getArea() {
+        return area;  // Getter for area
+    }
+
+    public void setArea(String area) {
+        this.area = area;  // Setter for area
+    }
+
     public User getUser() {
         return user;
     }
@@ -123,6 +133,14 @@ public class Company {
 
     public void setProductHistory(List<Product> productHistory) {
         this.productHistory = productHistory;
+    }
+
+    public List<CollectionRequest> getCollectionRequests() {
+        return collectionRequests;
+    }
+
+    public void setCollectionRequests(List<CollectionRequest> collectionRequests) {
+        this.collectionRequests = collectionRequests;
     }
 
     public void addCollectionRequest(CollectionRequest request) {

@@ -1,6 +1,8 @@
 package com.floralfusion.floralfusion.repositories;
 
 import com.floralfusion.floralfusion.entities.Customer;
+import com.floralfusion.floralfusion.entities.User;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -12,4 +14,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     Optional<Customer> findByUser_UserID(Long userID);
 
     Optional<Customer> findByCustomerID(Long customerID);
+
+    Customer findByUser(User user);
 }

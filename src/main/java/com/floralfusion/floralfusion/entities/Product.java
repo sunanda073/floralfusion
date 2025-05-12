@@ -2,6 +2,8 @@ package com.floralfusion.floralfusion.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -11,6 +13,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import java.util.List;
+
+import com.floralfusion.floralfusion.enums.ProductCategory;
 
 @Entity
 @Table(name = "products")
@@ -22,8 +26,9 @@ public class Product {
 
     private String productName;
 
+    @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private String category;
+    private ProductCategory category;
 
     @Column(nullable = false)
     private String description;
@@ -33,17 +38,19 @@ public class Product {
 
     @ManyToOne
     @JoinColumn(name = "companyID")
-    private Company company;  
+    private Company company;
 
     private String imageUrl;
 
     private int stockQuantity;
 
+
     @OneToMany(mappedBy = "product")
-    private List<OrderItem> orderItems;  // Added One-to-Many relationship with OrderItem
+    private List<OrderItem> orderItems; // Added One-to-Many relationship with OrderItem
 
     // Constructors
-    public Product(String productName, String category, String description, Company company, double price, String imageUrl, int stockQuantity) {
+    public Product(String productName, ProductCategory category, String description, Company company, double price,
+            String imageUrl, int stockQuantity) {
         this.productName = productName;
         this.category = category;
         this.description = description;
@@ -72,14 +79,6 @@ public class Product {
 
     public void setProductName(String productName) {
         this.productName = productName;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public void setCategory(String category) {
-        this.category = category;
     }
 
     public String getDescription() {
@@ -129,4 +128,13 @@ public class Product {
     public void setOrderItems(List<OrderItem> orderItems) {
         this.orderItems = orderItems;
     }
+
+    public ProductCategory getCategory() {
+        return category;
+    }
+
+    public void setCategory(ProductCategory category) {
+        this.category = category;
+    }
+
 }

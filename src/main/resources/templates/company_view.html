@@ -3,66 +3,381 @@
 
 <head>
     <meta charset="UTF-8">
-    <title>Floral Fusion - Company Dashboard</title>
+    <title>Business Dashboard | Floral Fusion</title>
     <link rel="stylesheet" href="/css/company_styles.css">
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
 </head>
 
 <body>
-    <!-- Header -->
-    <header class="header">
-        <h1>Welcome to Floral Fusion</h1>
-        <nav class="nav">
-            <a href="/logout" class="button">Logout</a>
-        </nav>
-    </header>
 
-    <!-- Main Content -->
-    <main class="container">
 
-        <!-- Introduction -->
-        <section class="section">
-            <h2>Partnering for a Greener Future</h2>
-            <p>We help you transform flower waste into eco-friendly products while handling collection from your locality.</p>
-        </section>
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-success">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">Floral Fusion</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarContent">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/company">Dashboard</a>
+                    </li>
+                    <!-- <li class="nav-item">
+                        <button class="nav-link btn btn-link text-white" id="orderHistoryBtn"
+                            style="text-decoration: none;">Order History</button>
+                    </li> -->
+                    <li class="nav-item">
+                        <button class="nav-link btn btn-link text-white" id="myProductsBtn"
+                            style="text-decoration: none;">My Products</button>
+                    </li>
 
-        <!-- Dashboard -->
-        <section class="section">
-            <h2>Dashboard</h2>
+                </ul>
+                <span class="navbar-text me-3 text-white">
+                    Welcome, Company User
+                </span>
+                <a class="btn btn-outline-light" href="/logout">Logout</a>
+            </div>
+        </div>
+    </nav>
 
-            <div class="card-container">
+    <div class="container mt-4" id="mainContent">
+        <h2 class="mb-4 text-center">Business Dashboard - Floral Fusion</h2>
 
-                <!-- Card 1 -->
-                <div class="card">
-                    <h3>Manage Flower Waste Collection</h3>
-                    <p>Coordinate with Floral Fusion for seamless flower waste collection from your locality.</p>
-                    <a href="/schedule-collection" class="button">Schedule Collection</a>
-                </div>
+        <!-- Flower Waste Order Section -->
+        <div class="card mb-4">
+            <div class="card-header bg-success text-white">Order Flower Waste</div>
+            <div class="card-body">
+                <form id="flowerOrderForm">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="quantity" class="form-label">Required Quantity (kg)</label>
+                            <input type="number" class="form-control" id="quantity" name="quantity" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="flowerType" class="form-label">Flower Type</label>
+                            <select class="form-select" id="flowerType" name="flowerType" required>
+                                <option value="">-- Select Flower Type --</option>
+                                <option value="ROSE">Rose</option>
+                                <option value="MARIGOLD">Marigold</option>
+                                <option value="LILY">Lily</option>
+                                <option value="LOTUS">Lotus</option>
+                                <option value="JASMINE">Jasmine</option>
+                                <option value="TULSI">Tulsi</option>
+                                <option value="DAISY">Daisy</option>
+                                <option value="HIBISCUS">Hibiscus</option>
+                                <option value="SUNFLOWER">Sunflower</option>
+                                <option value="MIXED">Mixed</option>
+                            </select>
+                        </div>
+                    </div>
+                    <!-- NEW: Delivery Address Field -->
+                    <div class="mb-3">
+                        <label for="deliveryAddress" class="form-label">Delivery Address</label>
+                        <textarea class="form-control" id="deliveryAddress" name="deliveryAddress" rows="2"
+                            placeholder="Enter full delivery address" required></textarea>
+                    </div>
 
-                <!-- Card 2 -->
-                <div class="card">
-                    <h3>Add and Manage Products</h3>
-                    <p>Showcase your eco-friendly products on the Floral Fusion platform.</p>
-                    <a href="/add-product" class="button">Add Product</a>
-                    <a href="/view-products" class="button">View Products</a>
-                </div>
+                    <div class="mb-3">
+                        <div class="alert alert-info mb-0" role="alert">
+                            <strong>Note:</strong> Delivery will be completed within the next <strong>24 hours</strong>.
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-success">Place Order & Pay</button>
+                </form>
+            </div>
+        </div>
 
-                <!-- Card 3 -->
-                <div class="card">
-                    <h3>Manage Orders</h3>
-                    <p>View and manage customer orders placed on the Floral Fusion platform.</p>
-                    <a href="/view-orders" class="button">View Orders</a>
-                </div>
+
+
+        <!-- Orders Section -->
+        <div class="card mb-4">
+            <div class="card-header bg-dark text-white">Orders History</div>
+            <div class="card-body">
+                <table class="table table-striped table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>Product</th>
+                            <th>Quantity (kg)</th>
+                            <th>Ordered At</th>
+                            <th>Expected Delivery By</th>
+                            <th>Delivered At</th>
+                            <th>Status</th>
+                            <th>Delivery Agent</th>
+                            <th>Action</th> <!-- New column -->
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${#lists.isEmpty(orders)}">
+                            <td colspan="10" class="text-center text-muted">No orders found.</td>
+                        </tr>
+                        <tr th:each="order, iterStat : ${orders}" th:unless="${#lists.isEmpty(orders)}">
+                            <td th:text="${iterStat.index + 1}">1</td>
+                            <td th:text="${order.flowerType}">Flower</td>
+                            <td th:text="${order.quantityInKg}">10</td>
+                            <td th:text="${#temporals.format(order.orderedAt, 'dd-MM-yyyy HH:mm')}">--</td>
+                            <td th:text="${#temporals.format(order.expectedDeliveryBy, 'dd-MM-yyyy HH:mm')}">--</td>
+                            <td>
+                                <span th:if="${order.deliveryStatus.name() == 'CANCELLED'}">------</span>
+                                <span th:if="${order.deliveryStatus.name() == 'DELIVERED'}"
+                                    th:text="${#temporals.format(order.deliveredAt, 'dd-MM-yyyy HH:mm')}">Delivered</span>
+                                <span
+                                    th:if="${order.deliveryStatus.name() != 'DELIVERED' and order.deliveryStatus.name() != 'CANCELLED'}">Pending</span>
+                            </td>
+
+                            <td>
+                                <span th:text="${order.deliveryStatus}"
+                                    th:classappend="
+                                          ${order.deliveryStatus.name() == 'DELIVERED'} ? 'text-success' :
+                                          (${order.deliveryStatus.name() == 'CANCELLED'} ? 'text-danger' : 'text-warning')">
+                                </span>
+                            </td>
+
+                            <td th:if="${order.deliveryPartner != null}">
+                                <span
+                                    th:text="${order.deliveryPartner.user.fname + ' ' + order.deliveryPartner.user.lname}"></span><br />
+                                <small th:text="${order.deliveryPartner.user.phone}"></small>
+                            </td>
+                            <td th:unless="${order.deliveryPartner != null}">
+                                Not Assigned
+                            </td>
+                            <td>
+                                <!-- Show 'No actions' if order is cancelled -->
+                                <span th:if="${order.deliveryStatus.name() == 'CANCELLED'}" class="text-muted">No
+                                    actions</span>
+
+                                <!-- Show action buttons only if NOT cancelled -->
+                                <div th:if="${order.deliveryStatus.name() != 'CANCELLED'}">
+                                    <!-- Cancel Button (hide if already delivered) -->
+                                    <form th:if="${order.deliveryStatus.name() != 'DELIVERED'}"
+                                        th:action="@{/company/cancel-order}" method="post" class="d-inline"
+                                        onsubmit="return confirm('Are you sure you want to cancel this order?');">
+                                        <input type="hidden" name="orderId" th:value="${order.orderId}" />
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">
+                                            Cancel
+                                        </button>
+                                    </form>
+
+                                    <!-- Rate Button (only if delivered) -->
+                                    <a th:if="${order.deliveryStatus.name() == 'DELIVERED'}"
+                                        th:href="@{'/business/rate-delivery/' + ${order.orderId}}"
+                                        class="btn btn-sm btn-outline-primary">
+                                        Rate
+                                    </a>
+                                </div>
+                            </td>
+
+                        </tr>
+                    </tbody>
+
+                </table>
 
             </div>
-        </section>
+        </div>
 
-    </main>
 
-    <!-- Footer -->
-    <footer>
-        <p>&copy; 2023 Floral Fusion. All rights reserved.</p>
-    </footer>
+        <!-- Display Success Message -->
+        <div th:if="${success}" class="alert alert-success">
+            <p th:text="${success}"></p>
+        </div>
+        <!-- Upload Product Section -->
+        <div class="card mb-4">
+            <div class="card-header bg-primary text-white">Upload Eco-Friendly Product</div>
+            <div class="card-body">
+                <form action="/company/upload-product" method="post" enctype="multipart/form-data">
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <!-- Updated: Category Field -->
+                            <label for="category" class="form-label">Product Category</label>
+                            <select class="form-select" id="category" name="category" required>
+                                <option value="">-- Select Category --</option>
+                                <option value="INCENSE_STICKS">Incense Sticks</option>
+                                <option value="ORGANIC_COMPOST">Organic Compost</option>
+                                <option value="FLORAL_PAPER">Floral Paper</option>
+                                <option value="CONES">Cones</option>
+                                <option value="ESSENTIAL_OILS">Essential Oils</option>
+                                <option value="SOAPS">Soaps</option>
+                                <option value="CANDLES">Candles</option>
+                                <option value="DYES">Dyes</option>
+                                <option value="DECOR_ITEMS">Decor Items</option>
+                                <option value="HOLI_COLORS">Holi Colors</option>
+                                <option value="SCENTED_CANDLES">Scented Candles</option>
+                                <option value="PERFUMES">Perfumes</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="productName" class="form-label">Product Name</label>
+                            <input type="text" class="form-control" id="productName" name="productName" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="price" class="form-label">Price (₹)</label>
+                            <input type="number" step="0.01" class="form-control" id="price" name="price" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="productImage" class="form-label">Product Image</label>
+                            <input type="file" class="form-control" id="productImage" name="productImage" required>
+                        </div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="stockQuantity" class="form-label">Stock Quantity</label>
+                            <input type="number" class="form-control" id="stockQuantity" name="stockQuantity" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Product Description</label>
+                        <textarea class="form-control" id="description" name="description" rows="3"></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Upload Product</button>
+                </form>
+            </div>
+        </div>
 
+
+
+
+        <!-- Orders Received Section -->
+        <div class="card">
+            <div class="card-header bg-dark text-white">Orders</div>
+            <div class="card-body">
+                <table class="table table-striped table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Order ID</th>
+                            <th>Customer</th>
+                            <th>Product</th>
+                            <th>Quantity</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Display this row if orderItems is empty -->
+                        <tr th:if="${#lists.isEmpty(orderItems)}">
+                            <td colspan="5" class="text-center text-muted">No orders found.</td>
+                        </tr>
+                        <tr th:each="item : ${orderItems}">
+                            <td th:text="${item.order.orderID}">Order ID</td>
+                            <td th:text="${item.order.customer.user.fname + ' ' + item.order.customer.user.lname}">
+                                Customer</td>
+                            <td th:text="${item.product.productName}">Product</td>
+                            <td th:text="${item.quantity}">Qty</td>
+                            <td th:text="${item.order.orderStatus}">Status</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Razorpay Checkout Script -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <!-- Payment Logic -->
+    <script>
+
+        document.getElementById('flowerOrderForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            const quantityInput = document.getElementById('quantity');
+            const flowerTypeInput = document.getElementById('flowerType');
+            const deliveryAddressInput = document.getElementById('deliveryAddress');
+
+            const quantity = quantityInput.value;
+            const flowerType = flowerTypeInput.value;
+            const deliveryAddress = deliveryAddressInput.value; // Capture the delivery address
+
+            // Calculate amount (example: ₹1 per kg)
+            const amount = quantity * 1 * 100;
+
+            fetch('/payment/create-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: amount })
+            })
+                .then(res => res.json())
+                .then(data => {
+                    const options = {
+                        key: 'rzp_test_LWliCpXznGjQeG', // Replace with your Razorpay key
+                        amount: data.amount,
+                        currency: 'INR',
+                        order_id: data.id,
+                        name: "Floral Fusion",
+                        description: `Flower Waste Order - ${flowerType}, Qty: ${quantity}kg`,
+                        handler: function (response) {
+                            fetch('/payment/payment-capture', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    paymentId: response.razorpay_payment_id,
+                                    orderId: data.id,
+                                    quantity: quantity,
+                                    flowerType: flowerType,
+                                    deliveryAddress: deliveryAddress
+                                })
+                            })
+                                .then(res => res.text())
+                                .then(result => {
+                                    // Clear form fields
+                                    quantityInput.value = '';
+                                    flowerTypeInput.value = '';
+                                    deliveryAddressInput.value = '';
+
+                                    // Show success message (Bootstrap alert)
+                                    const alertDiv = document.createElement('div');
+                                    alertDiv.className = 'alert alert-success alert-dismissible fade show mt-3';
+                                    alertDiv.role = 'alert';
+                                    alertDiv.innerHTML = `
+                                ${result}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            `;
+
+                                    document.querySelector('.card-body').prepend(alertDiv);
+                                });
+                        },
+                        prefill: {
+                            name: "Business User",
+                            email: "company@example.com",
+                            contact: "9876543210"
+                        }
+                    };
+
+                    const rzp = new Razorpay(options);
+                    rzp.open();
+                })
+                .catch(err => {
+                    alert("Something went wrong. Try again.");
+                    console.error(err);
+                });
+        });
+
+    </script>
+
+    <script>
+        document.getElementById('myProductsBtn').addEventListener('click', function () {
+            fetch('/company/my-products')
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.text();
+                })
+                .then(html => {
+                    document.getElementById('mainContent').innerHTML = html;
+                })
+                .catch(error => {
+                    console.error('Error loading My Products page:', error);
+                    alert('Failed to load My Products page.');
+                });
+        });
+    </script>
+
+    <!-- Bootstrap JS (Optional for navbar toggle) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 
 </html>

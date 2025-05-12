@@ -9,7 +9,7 @@ body {
 
 /* Sidebar Styles */
 .sidebar {
-    width: 250px;
+    width: 265px;
     background: rgba(44, 62, 80, 0.9); /* Semi-transparent sidebar */
     color: white;
     height: 100vh;
@@ -115,7 +115,7 @@ body {
 
 /* Main Content */
 .main-content {
-    margin-left: 250px;
+    margin-left: 265px;
     padding: 20px;
     flex-grow: 1;
     width: calc(100% - 250px);
@@ -425,6 +425,84 @@ button:hover {
 }
 
 .form-close-btn:hover {
+    background: #c82333;
+}
+
+/* Add Delivery Partner Modal Specific Styles */
+#deliveryPartnerModal .modal-content {
+    width: 500px;
+    padding: 30px;
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 12px 35px rgba(0, 0, 0, 0.25);
+}
+
+#deliveryPartnerModal h3 {
+    margin-bottom: 20px;
+    color: #2c3e50;
+}
+
+/* Form Fields */
+#deliveryPartnerModal form input {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 14px;
+}
+
+/* Dropdown Styling for Location Fields */
+#deliveryPartnerModal form select {
+    width: 100%;
+    padding: 10px 12px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 14px;
+    background-color: #fff;
+    appearance: none;
+    background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%204%205'%3E%3Cpath%20fill='%23666'%20d='M2%200L0%202h4L2%200zm0%205L0%203h4l-2%202z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    background-size: 10px;
+}
+
+#deliveryPartnerModal form select:focus {
+    border-color: #1abc9c;
+    outline: none;
+}
+
+/* Submit Button */
+#deliveryPartnerModal form button[type="submit"] {
+    background: #1abc9c;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+#deliveryPartnerModal form button[type="submit"]:hover {
+    background: #16a085;
+}
+
+#deliveryPartnerModal .form-close-btn {
+    background: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    font-size: 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+#deliveryPartnerModal .form-close-btn:hover {
     background: #c82333;
 }
 

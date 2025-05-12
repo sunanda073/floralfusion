@@ -4,193 +4,102 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Floral Fusion - Customer Dashboard</title>
-  <!-- Bootstrap CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <!-- Custom CSS (Optional) -->
-
-  <style>
-    .navbar {
-      background-color: rgb(50, 163, 163) !important;
-      /* Sea Green */
-    }
-
-    .navbar-nav .nav-item {
-      display: flex;
-      align-items: center;
-      padding-left: 15px;
-      /* Adds spacing between the navbar items */
-    }
-
-    .navbar-nav .nav-item .btn-logout {
-      background-color: transparent;
-      color: #007bff;
-      border: none;
-      border-radius: 25px;
-      padding: 5px 15px;
-      font-size: 0.9rem;
-      text-transform: uppercase;
-      font-weight: bold;
-      transition: color 0.3s ease;
-      line-height: 1.5;
-      text-decoration: none;
-      /* Make sure the text isn't underlined */
-    }
-
-    .navbar-nav .nav-item .btn-logout:hover {
-      color: #0056b3;
-      /* Darker blue text color on hover */
-    }
-
-    .navbar-nav .nav-item .btn-logout:focus {
-      box-shadow: none;
-    }
-
-
-    .navbar-nav {
-      margin-left: auto;
-      /* This moves the navbar items to the right */
-    }
-
-    .navbar-brand {
-      font-weight: bold;
-      font-size: 1.5rem;
-    }
-
-    .footer {
-      background-color: #f8f9fa;
-      padding: 10px;
-      text-align: center;
-    }
-
-    .product-card img,
-    .card-img-top {
-      width: 100%;
-      /* Ensures that the image fills the width of its container */
-      height: 200px;
-      /* Fixed height for uniformity */
-      object-fit: cover;
-      /* Ensures that the image maintains its aspect ratio and is cropped if needed */
-    }
-  </style>
-
-
+  <title>Customer Dashboard - Floral Fusion</title>
+  <link rel="stylesheet" href="/css/customer_styles.css">
 </head>
 
 <body>
 
-  <!-- Header -->
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <div class="container">
-      <a class="navbar-brand" href="#">Floral Fusion</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="#">Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Shop</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">My Orders</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Cart</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="#">Profile</a>
-          </li>
-          <li class="nav-item">
-            <a class="btn btn-danger nav-link text-white btn-logout" href="#">Logout</a>
-          </li>
+  <!-- Navbar -->
+  <header class="navbar">
+    <div class="container navbar-content">
+      <div class="logo">🌿 Floral Fusion</div>
+      <nav>
+        <ul class="nav-links">
+          <li><a href="#">Home</a></li>
+          <li><a href="/customer/cart">My Cart</a></li>
+          <li><a href="/customer/orders">Orders</a></li>
+          <li><a href="#">Logout</a></li>
         </ul>
-      </div>
+      </nav>
     </div>
-  </nav>
+  </header>
 
-  <!-- Hero Section -->
-  <div class="container my-4">
-    <div class="p-5 text-center bg-light rounded-3">
-      <h1 class="display-4">Welcome to Floral Fusion</h1>
-      <p class="lead">Explore our exclusive range of eco-friendly products.</p>
-      <a href="#products" class="btn btn-primary btn-lg">Shop Now</a>
-    </div>
-  </div>
+  <!-- Main Content -->
+  <main class="container">
+    <section class="hero">
+      <h1>Welcome, <span th:text="${customer.user.fname}">Customer</span>!</h1>
+      <p>Explore our range of eco-friendly products made from recycled floral waste.</p>
+    </section>
 
-  <!-- Product Categories -->
-  <div class="container my-4">
-    <h2 class="mb-4">Product Categories</h2>
-    <div class="row">
-      <div class="col-md-3 mb-3">
-        <div class="card">
-          <img src="/images/incense-sticks.jpg" class="card-img-top" alt="Incense Sticks">
-          <div class="card-body text-center">
-            <h5 class="card-title">Incense Sticks</h5>
-            <a href="#" class="btn btn-outline-primary">Explore</a>
-          </div>
+    <!-- Product Filter -->
+    <section class="search-section">
+      <div class="filter-bar">
+        <h2>Explore Products</h2>
+        <div class="filter-select">
+          <label for="category">Filter by Category:</label>
+          <select id="category" onchange="filterProducts()">
+            <option value="ALL">All</option>
+            <option value="INCENSE_STICKS">Incense Sticks</option>
+            <option value="ORGANIC_COMPOST">Organic Compost</option>
+            <option value="FLORAL_PAPER">Floral Paper</option>
+            <option value="ESSENTIAL_OILS">Essential Oils</option>
+            <option value="SOAPS">Soaps</option>
+            <option value="CANDLES">Candles</option>
+            <option value="DYES">Dyes</option>
+            <option value="DECOR_ITEMS">Decor Items</option>
+            <option value="HOLI_COLORS">Holi Colors</option>
+            <option value="PERFUMES">Perfumes</option>
+          </select>
         </div>
       </div>
-      <div class="col-md-3 mb-3">
-        <div class="card">
-          <img src="/images/scented-candles.jpg" class="card-img-top" alt="Scented Candles">
-          <div class="card-body text-center">
-            <h5 class="card-title">Scented Candles</h5>
-            <a href="#" class="btn btn-outline-primary">Explore</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 mb-3">
-        <div class="card">
-          <img src="/images/perfumes.jpg" class="card-img-top" alt="Perfumes">
-          <div class="card-body text-center">
-            <h5 class="card-title">Perfumes</h5>
-            <a href="#" class="btn btn-outline-primary">Explore</a>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-3 mb-3">
-        <div class="card">
-          <img src="/images/eco-friendly-colors.png" class="card-img-top" alt="Colors">
-          <div class="card-body text-center">
-            <h5 class="card-title">Eco-friendly colors</h5>
-            <a href="#" class="btn btn-outline-primary">Explore</a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+    </section>
 
-  <!-- Products Section -->
-  <div class="container my-4" id="products">
-    <h2 class="mb-4">Featured Products</h2>
-    <div class="row">
-      <div class="col-md-3 mb-4">
-        <div class="card product-card">
-          <img src="/images/product-image.jpg" class="card-img-top" alt="Product">
-          <div class="card-body text-center">
-            <h5 class="card-title">Product Name</h5>
-            <p class="card-text">$20.00</p>
-            <button class="btn btn-success">Add to Cart</button>
-            <button class="btn btn-primary">Buy Now</button>
+    <!-- Product Grid -->
+    <section class="products-section">
+      <h2 class="section-heading">Available Products</h2>
+      <div class="products-grid">
+        <div th:each="product : ${products}" class="product-card" th:data-category="${product.category}">
+          <img th:src="@{${product.imageUrl}}" alt="Product Image">
+          <div class="product-info">
+            <h3 th:text="${product.productName}"></h3>
+            <p th:text="${product.description}" class="product-description"></p>
+            <p class="price" th:text="${product.price}"></p>
+
+            <!-- New -->
+            <form th:action="@{/customer/cart/add}" method="post">
+              <input type="hidden" name="productId" th:value="${product.productID}" />
+              <button type="submit" class="cart-btn">Add to Cart</button>
+            </form>
+
           </div>
         </div>
       </div>
-      <!-- Add more product cards as needed -->
-    </div>
-  </div>
+    </section>
 
+
+  </main>
 
   <!-- Footer -->
   <footer class="footer">
-    <p>&copy; 2024 Floral Fusion. All Rights Reserved.</p>
+    <div class="container">
+      <p>&copy; 2025 Floral Fusion. All rights reserved.</p>
+    </div>
   </footer>
 
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Script to filter products -->
+  <script>
+    function filterProducts() {
+      const selectedCategory = document.getElementById('category').value;
+      const products = document.querySelectorAll('.product-card');
+
+      products.forEach(product => {
+        const category = product.getAttribute('data-category');
+        product.style.display = (selectedCategory === 'ALL' || category === selectedCategory) ? 'block' : 'none';
+      });
+    }
+  </script>
+
 </body>
 
 </html>

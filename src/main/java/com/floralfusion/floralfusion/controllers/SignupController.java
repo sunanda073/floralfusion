@@ -2,10 +2,14 @@ package com.floralfusion.floralfusion.controllers;
 
 import com.floralfusion.floralfusion.entities.Collector;
 import com.floralfusion.floralfusion.entities.Company;
+import com.floralfusion.floralfusion.entities.Customer;
+import com.floralfusion.floralfusion.entities.DeliveryPartner;
 import com.floralfusion.floralfusion.entities.FlowerContributor;
 import com.floralfusion.floralfusion.entities.User;
 import com.floralfusion.floralfusion.repositories.CollectorRepository;
 import com.floralfusion.floralfusion.repositories.CompanyRepository;
+import com.floralfusion.floralfusion.repositories.CustomerRepository;
+import com.floralfusion.floralfusion.repositories.DeliveryPartnerRepository;
 import com.floralfusion.floralfusion.repositories.FlowerContributorRepository;
 import com.floralfusion.floralfusion.repositories.UserRepository;
 
@@ -33,6 +37,12 @@ public class SignupController {
     @Autowired
     private CompanyRepository companyRepresentativeRepository;
 
+    @Autowired
+    private DeliveryPartnerRepository deliveryPartnerRepository;
+
+    @Autowired
+    private CustomerRepository customerRepository;
+
     @PostMapping("/signup")
     public String handleSignup(
             @RequestParam("userType") String userType,
@@ -52,12 +62,12 @@ public class SignupController {
             @RequestParam(value = "companyPhone", required = false) String companyPhone,
             @RequestParam(value = "website", required = false) String website,
             @RequestParam(value = "taxId", required = false) String taxId) {
-    
+
         // Check if email already exists
         if (userRepository.findByEmail(email).isPresent()) {
             return "redirect:/signup?error=emailExists";
         }
-    
+
         // Save to User table
         User user = new User();
         user.setFname(fname);
@@ -70,7 +80,7 @@ public class SignupController {
         user.setState(state);
         user.setCity(city);
         user = userRepository.save(user);
-    
+
         // If user is a contributor, save to flower_contributors
         if ("contributor".equalsIgnoreCase(userType) && contributorType != null) {
             FlowerContributor contributor = new FlowerContributor();
@@ -79,7 +89,7 @@ public class SignupController {
             contributor.setArea(area);
             flowerContributorRepository.save(contributor);
         }
-    
+
         // Save Company Representative
         if ("company".equalsIgnoreCase(userType)) {
             Company company = new Company();
@@ -92,9 +102,16 @@ public class SignupController {
             company.setTaxID(taxId);
             companyRepresentativeRepository.save(company);
         }
-    
+
+        // New block for customer
+        if ("customer".equalsIgnoreCase(userType)) {
+            Customer customer = new Customer();
+            customer.setUser(user);
+            customerRepository.save(customer);
+        }
+
         return "redirect:/login?success=Registration successful. Please log in.";
-    }    
+    }
 
     @PostMapping("/user/login")
     public String loginUser(
@@ -121,14 +138,36 @@ public class SignupController {
                 return "redirect:/contributor";
 
             case "collector":
-                Collector collector = collectorRepository.findByUser(user); // Ensure this method exists
+                Collector collector = collectorRepository.findByUser(user);
                 if (collector != null) {
                     session.setAttribute("collector", collector);
                 }
                 return "redirect:/collectors/collector";
 
             case "company":
+                Company company = companyRepresentativeRepository.findByUser_UserID(user.getUserID());
+                if (company != null) {
+                    session.setAttribute("companyId", company.getCompanyID());
+                    session.setAttribute("companyName", company.getCompanyName());
+                    session.setAttribute("company", company);
+                }
                 return "redirect:/company";
+
+            case "delivery_partner":
+                DeliveryPartner deliveryPartner = deliveryPartnerRepository.findByUser(user);
+                if (deliveryPartner != null) {
+                    session.setAttribute("deliveryPartnerId", deliveryPartner.getDeliveryPartnerId());
+                    session.setAttribute("deliveryPartner", deliveryPartner);
+                }
+                return "redirect:/delivery-partners/dashboard";
+
+            case "customer":
+                Customer customer = customerRepository.findByUser(user);
+                if (customer != null) {
+                    session.setAttribute("customerId", customer.getCustomerID());
+                    session.setAttribute("customer", customer);
+                }
+                return "redirect:/customer";
 
             default:
                 return "redirect:/dashboard";

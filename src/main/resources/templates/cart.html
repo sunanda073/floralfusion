@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>My Cart - Floral Fusion</title>
+    <link rel="stylesheet" href="/css/cart_styles.css">
+</head>
+
+<body>
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="container navbar-content">
+            <div class="logo">🌿 Floral Fusion</div>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="/customer">Home</a></li>
+                    <li><a href="/customer/cart">My Cart</a></li>
+                    <li><a href="#">Orders</a></li>
+                    <li><a href="/logout">Logout</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <!-- Cart Content -->
+    <main class="container">
+        <h2>My Cart</h2>
+        <div th:if="${#lists.isEmpty(cartItems)}">
+            <p>Your cart is empty.</p>
+        </div>
+
+        <table th:if="${!#lists.isEmpty(cartItems)}" class="cart-table">
+            <thead>
+                <tr>
+                    <th>Image</th>
+                    <th>Product</th>
+                    <th>Price (₹)</th>
+                    <th>Quantity</th>
+                    <th>Subtotal (₹)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="item : ${cartItems}">
+                    <td>
+                        <img th:src="@{'/' + ${item.product.imageUrl}}" alt="Product Image" class="product-image" />
+                    </td>
+                    <td th:text="${item.product.productName}">Product Name</td>
+                    <td th:text="${item.product.price}">100</td>
+                    <td th:text="${item.quantity}">1</td>
+                    <td th:text="${item.quantity * item.product.price}">100</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="cart-total" th:if="${!#lists.isEmpty(cartItems)}">
+            <p>
+                Total: <span th:text="${totalPrice}"></span> ₹
+            </p>
+            <a href="javascript:void(0);" class="btn-checkout" onclick="openShippingModal()">Proceed to Checkout</a>
+        </div>
+    </main>
+
+    <!-- Shipping Address Modal -->
+    <div id="shippingModal" class="modal">
+        <div class="modal-content">
+            <h2>Enter Shipping Address</h2>
+            <form id="shippingForm" onsubmit="submitShippingAddress(event)">
+                <label for="shippingAddress">Shipping Address:</label>
+                <textarea id="shippingAddress" name="shippingAddress" rows="4" required></textarea>
+                <button type="submit" class="btn-submit">Submit</button>
+            </form>
+            <button onclick="closeShippingModal()">Close</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2025 Floral Fusion. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script th:inline="javascript">
+        // Open the modal for shipping address
+        function openShippingModal() {
+            document.getElementById('shippingModal').style.display = 'block';
+        }
+
+        // Close the modal
+        function closeShippingModal() {
+            document.getElementById('shippingModal').style.display = 'none';
+        }
+
+        // Submit the shipping address and proceed to payment
+        function submitShippingAddress(event) {
+            event.preventDefault(); // Prevent form submission
+            const shippingAddress = document.getElementById('shippingAddress').value;
+
+            // Close the modal
+            closeShippingModal();
+
+            // Proceed to payment
+            startPayment(shippingAddress);
+        }
+
+        // Start payment process
+        function startPayment(shippingAddress) {
+            let totalAmount = [[${ totalPrice }]] * 100;
+
+            fetch('/payment/create-order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ amount: totalAmount })
+            })
+                .then(response => response.json())
+                .then(order => {
+                    const options = {
+                        key: 'rzp_test_LWliCpXznGjQeG', // Replace with your Razorpay key
+                        amount: order.amount,
+                        currency: 'INR', // Assuming the currency is INR
+                        name: 'Floral Fusion',
+                        description: 'Flower Product Purchase',
+                        order_id: order.id,
+                        handler: function (response) {
+                            // Send payment and shipping info to backend for order completion
+                            fetch('/payment/customer/payment-capture', {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    paymentId: response.razorpay_payment_id,
+                                    orderId: order.id,
+                                    shippingAddress: shippingAddress
+                                })
+                            })
+                                .then(res => res.json())
+                                .then(data => {
+                                    alert("Order placed successfully!");
+                                })
+                                .catch(err => {
+                                    alert("Error placing order.");
+                                    console.error(err);
+                                });
+                        },
+                        prefill: {
+                            name: '', // Optionally add customer name
+                            email: '', // Optionally add customer email
+                            contact: '' // Optionally add customer contact
+                        },
+                        theme: {
+                            color: '#4CAF50' // Customize the theme color
+                        }
+                    };
+
+                    const rzp = new Razorpay(options);
+                    rzp.open();
+                })
+                .catch(err => {
+                    console.error(err);
+                    alert("Something went wrong. Please try again.");
+                });
+        }
+
+    </script>
+
+</body>
+
+</html>

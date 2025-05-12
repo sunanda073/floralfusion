@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flower Delivery Agent Dashboard</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/deliverypartner_styles.css">
+</head>
+
+<body>
+
+    <!-- Navbar -->
+    <nav class="navbar navbar-expand-lg bg-success px-4 py-2">
+        <div class="container-fluid justify-content-between">
+            <h2 class="text-white m-0">Floral Fusion - Delivery Agent Dashboard</h2>
+            <div class="d-flex align-items-center">
+                <a href="/change-password" class="btn btn-outline-light me-3">Change Password</a>
+
+                <!-- User Dropdown -->
+                <div class="dropdown me-3">
+                    <button class="btn btn-light dropdown-toggle" type="button" id="profileDropdown"
+                        data-bs-toggle="dropdown" aria-expanded="false">
+                        👤
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                        <li>
+                            <span class="dropdown-item fw-bold"
+                                th:text="${deliveryPartner.user.fname} + ' ' + ${deliveryPartner.user.lname}">
+                                Agent Name
+                            </span>
+                        </li>
+                        <li>
+                            <span class="dropdown-item" th:text="${deliveryPartner.user.email}">
+                                email@example.com
+                            </span>
+                        </li>
+                        <li>
+                            <span class="dropdown-item" th:text="${deliveryPartner.user.phone}">
+                                +91‑9876543210
+                            </span>
+                        </li>
+                    </ul>
+                </div>
+
+                <a href="/logout" class="btn btn-outline-light">Logout</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-5">
+
+        <!-- Greeting -->
+        <h1 th:text="'Welcome, ' + ${deliveryPartner.user.fname} + '!'">Welcome, Agent!</h1>
+
+        <!-- Stats -->
+        <div class="card mt-4 p-4">
+            <h3>Your Delivery Stats</h3>
+            <div class="row text-center mt-3">
+                <div class="col-md-3 mb-3">
+                    <div class="border rounded p-3 bg-light">
+                        <h5>Today's Deliveries</h5>
+                        <p th:text="${todayCount} + ' deliveries'">0 deliveries</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="border rounded p-3 bg-light">
+                        <h5>Completed Today</h5>
+                        <p th:text="${completedTodayCount} + ' deliveries'">0 deliveries</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="border rounded p-3 bg-light">
+                        <h5>Pending Deliveries</h5>
+                        <p th:text="${pendingCount} + ' deliveries'">0 deliveries</p>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="border rounded p-3 bg-light">
+                        <h5>Avg. Daily Deliveries</h5>
+                        <p th:text="${avgDaily} + ' deliveries'">0 deliveries</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Alerts -->
+            <div th:if="${deliverySuccessMessage}" class="alert alert-success mt-3" th:text="${deliverySuccessMessage}">
+            </div>
+            <div th:if="${errorMessage}" class="alert alert-danger mt-3" th:text="${errorMessage}"></div>
+
+            <!-- Assigned Deliveries -->
+            <div th:if="${#lists.isEmpty(assignedDeliveries)}">
+                <p class="mt-4">No delivery requests assigned at the moment.</p>
+            </div>
+
+            <div class="table-responsive mt-4" th:if="${!#lists.isEmpty(assignedDeliveries)}">
+                <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+                <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+                <table class="table table-bordered table-hover">
+                    <thead class="table-success">
+                        <tr>
+                            <th>Request ID</th>
+                            <th>Company</th>
+                            <th>Company Contact</th>
+                            <th>Delivery Address</th>
+                            <th>Flower Type</th>
+                            <th>Quantity (kg)</th>
+                            <th>Delivery Time</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="delivery : ${assignedDeliveries}">
+                            <td th:text="${delivery.orderId}">001</td>
+                            <td th:text="${delivery.company.companyName}">Acme Flowers</td>
+                            <td th:text="${delivery.company.companyPhone}">+91‑9876543210</td>
+                            <td th:text="${delivery.company.companyAddress}">456 Flower Avenue</td>
+                            <td th:text="${delivery.flowerType}">ROSES</td>
+                            <td th:text="${delivery.quantityInKg}">20</td>
+                            <td th:text="${#temporals.format(delivery.expectedDeliveryBy, 'dd MMM yyyy, HH:mm')}">
+                                07 Apr 2025, 12:00
+                            </td>
+                            <td>
+                                <span class="badge" th:classappend="${delivery.deliveryStatus.name() == 'PENDING'} 
+                                                       ? ' bg-warning text-dark' 
+                                                       : ' bg-success'" th:text="${delivery.deliveryStatus}">
+                                    PENDING
+                                </span>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary btn-sm mb-1" data-bs-toggle="modal"
+                                    data-bs-target="#deliveryDetailsModal"
+                                    th:attr="data-delivery-id=${delivery.orderId}" onclick="loadDeliveryDetails(this)">
+                                    View Details
+                                </button>
+
+                                <form th:action="@{'/delivery-partners/delivery/mark-delivered/' + ${delivery.orderId}}"
+                                    method="post" style="display:inline;">
+                                    <button type="submit" class="btn btn-success btn-sm">
+                                        Mark as Delivered
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Past Deliveries -->
+        <!-- Past Deliveries -->
+        <div class="card mt-5 p-4">
+            <h3>📜 Past Deliveries</h3>
+
+            <div th:if="${#lists.isEmpty(pastDeliveries)}">
+                <p>No past deliveries available.</p>
+            </div>
+
+            <div class="table-responsive mt-3" th:if="${!#lists.isEmpty(pastDeliveries)}">
+                <table class="table table-bordered table-hover">
+                    <thead class="table-success">
+                        <tr>
+                            <th>Serial No.</th>
+                            <th>Company</th>
+                            <th>Flower Type</th>
+                            <th>Quantity (kg)</th>
+                            <th>Status</th>
+                            <th>Delivered At</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="delivery, iterStat : ${pastDeliveries}">
+                            <!-- Serial Number -->
+                            <td th:text="${iterStat.index + 1}">1</td>
+                            <td th:text="${delivery.company.companyName}">Acme Flowers</td>
+                            <td th:text="${delivery.flowerType}">MIXED</td>
+                            <td th:text="${delivery.quantityInKg}">15</td>
+                            <td>
+                                <span class="badge bg-success" th:text="${delivery.deliveryStatus}">
+                                    DELIVERED
+                                </span>
+                            </td>
+                            <td th:text="${#temporals.format(delivery.deliveredAt, 'dd MMM yyyy, HH:mm')}">
+                                07 Apr 2025, 15:00
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+
+    </div>
+
+    <!-- Modal for Delivery Details -->
+    <div class="modal fade" id="deliveryDetailsModal" tabindex="-1" aria-labelledby="deliveryDetailsModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-scrollable">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deliveryDetailsModalLabel">
+                        Delivery Request Details
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="deliveryDetailsModalBody">
+                    <p>Loading details...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JS -->
+    <script>
+        function loadDeliveryDetails(button) {
+            const deliveryId = button.getAttribute("data-delivery-id");
+            fetch(`/delivery-partners/delivery/request-details/${deliveryId}`)
+                .then(response => response.text())
+                .then(html => {
+                    document.getElementById("deliveryDetailsModalBody").innerHTML = html;
+                })
+                .catch(() => {
+                    document.getElementById("deliveryDetailsModalBody").innerHTML =
+                        "<p>Error loading details.</p>";
+                });
+        }
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

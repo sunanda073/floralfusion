@@ -23,6 +23,8 @@
                 <li><a href="#dashboard"><i class="fa-solid fa-gauge-high"></i> <span>Dashboard</span></a></li>
                 <li><a href="#collectors"><i class="fa-solid fa-people-group"></i> <span>Manage Collectors</span></a>
                 </li>
+                <li><a href="#deliveryPartners"><i class="fa-solid fa-truck"></i> <span>Manage Delivery
+                            Partners</span></a></li>
                 <li><a href="#stock"><i class="fa-solid fa-seedling"></i> <span>Flower Stock</span></a></li>
                 <li><a href="#orders"><i class="fa-solid fa-file-invoice-dollar"></i> <span>Company Orders</span></a>
                 </li>
@@ -155,7 +157,7 @@
                     <td th:text="${collector.user.phone}"></td>
                     <td th:text="${collector.user.email}"></td>
                     <td th:text="${collector.area}"></td>
-                    <td th:text="${collector.rating}"></td>
+                    <td th:text="${(collector.rating).intValue()}"></td>
                     <td>
                         <button th:attr="onclick='editCollector(' + ${collector.collectorID} + ')'">Edit</button>
                         <button th:attr="onclick='deleteCollector(' + ${collector.collectorID} + ')'">Delete</button>
@@ -163,6 +165,78 @@
                 </tr>
             </table>
         </section>
+
+        <section id="deliveryPartners">
+            <h2>Manage Delivery Partners</h2>
+            <button onclick="showDeliveryPartnerForm()">Add New Delivery Partner</button>
+
+            <!-- Modal Form -->
+            <div id="deliveryPartnerModal" class="modal"
+                th:style="${deliverySuccessMessage} ? 'display:flex;' : 'display:none;'">
+                <div class="modal-content">
+                    <h3>Add Delivery Partner</h3>
+
+                    <form action="/delivery-partners/add" method="post">
+                        <input type="text" name="fname" placeholder="First Name" required>
+                        <input type="text" name="lname" placeholder="Last Name" required>
+                        <input type="email" name="email" placeholder="Email" required>
+                        <input type="text" name="phone" placeholder="Phone" required>
+                        <input type="password" name="password" placeholder="Password" required>
+
+                        <!-- Location Selection -->
+                        <select name="country" id="dpCountrySelect" onchange="populateDPStates()" required>
+                            <option value="">Select Country</option>
+                            <option value="India">India</option>
+                        </select>
+
+                        <select name="state" id="dpStateSelect" onchange="populateDPCities()" required>
+                            <option value="">Select State</option>
+                        </select>
+
+                        <select name="city" id="dpCitySelect" required>
+                            <option value="">Select City</option>
+                        </select>
+
+                        <select name="area" id="dpAreaSelect" required>
+                            <option value="">Select Area</option>
+                        </select>
+
+                        <input type="hidden" name="adminId" th:value="${admin.adminID}" />
+
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <button type="submit">Submit</button>
+                            <button type="button" class="form-close-btn"
+                                onclick="closeDeliveryPartnerForm()">Close</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Delivery Partners Table -->
+            <table id="deliveryPartnerTable">
+                <tr>
+                    <th>Name</th>
+                    <th>Contact</th>
+                    <th>Email</th>
+                    <th>Area</th>
+                    <th>Rating</th>
+                    <th>Actions</th>
+                </tr>
+                <tr th:each="dp : ${deliveryPartners}">
+                    <td th:text="${dp.user.fname + ' ' + dp.user.lname}"></td>
+                    <td th:text="${dp.user.phone}"></td>
+                    <td th:text="${dp.user.email}"></td>
+                    <td th:text="${dp.area}"></td>
+                    <td th:text="${dp.rating}"></td>
+                    <td>
+                        <button th:attr="onclick='editDeliveryPartner(' + ${dp.deliveryPartnerId} + ')'">Edit</button>
+                        <button
+                            th:attr="onclick='deleteDeliveryPartner(' + ${dp.deliveryPartnerId} + ')'">Delete</button>
+                    </td>
+                </tr>
+            </table>
+        </section>
+
 
         <section id="stock">
             <h2>Flower Waste Stock</h2>
@@ -221,7 +295,7 @@
                     <td th:text="${collector.user.fname + ' ' + collector.user.lname}"></td>
                     <td th:text="${collector.totalPickups}"></td>
                     <td th:text="${collector.totalWasteCollected}"></td>
-                    <td th:text="${collector.rating}"></td>
+                    <td th:text="${(collector.rating).intValue()}"></td>
                 </tr>
             </table>
         </section>
@@ -285,17 +359,17 @@
                     }
                 }
             };
-        
+
             function populateStates() {
                 const country = document.getElementById("countrySelect").value;
                 const stateSelect = document.getElementById("stateSelect");
                 const citySelect = document.getElementById("citySelect");
                 const areaSelect = document.getElementById("areaSelect");
-        
+
                 stateSelect.innerHTML = '<option value="">Select State</option>';
                 citySelect.innerHTML = '<option value="">Select City</option>';
                 areaSelect.innerHTML = '<option value="">Select Area</option>';
-        
+
                 if (country && locationData[country]) {
                     Object.keys(locationData[country]).forEach(state => {
                         const option = document.createElement("option");
@@ -305,16 +379,16 @@
                     });
                 }
             }
-        
+
             function populateCities() {
                 const country = document.getElementById("countrySelect").value;
                 const state = document.getElementById("stateSelect").value;
                 const citySelect = document.getElementById("citySelect");
                 const areaSelect = document.getElementById("areaSelect");
-        
+
                 citySelect.innerHTML = '<option value="">Select City</option>';
                 areaSelect.innerHTML = '<option value="">Select Area</option>';
-        
+
                 if (country && state && locationData[country][state]) {
                     Object.keys(locationData[country][state]).forEach(city => {
                         const option = document.createElement("option");
@@ -324,15 +398,15 @@
                     });
                 }
             }
-        
+
             function populateAreas() {
                 const country = document.getElementById("countrySelect").value;
                 const state = document.getElementById("stateSelect").value;
                 const city = document.getElementById("citySelect").value;
                 const areaSelect = document.getElementById("areaSelect");
-        
+
                 areaSelect.innerHTML = '<option value="">Select Area</option>';
-        
+
                 if (country && state && city && locationData[country][state][city]) {
                     locationData[country][state][city].forEach(area => {
                         const option = document.createElement("option");
@@ -343,8 +417,120 @@
                 }
             }
         </script>
-        
+        <script>
+            function showDeliveryPartnerForm() {
+                document.getElementById("deliveryPartnerModal").style.display = "flex";
+            }
 
+            function closeDeliveryPartnerForm() {
+                document.getElementById("deliveryPartnerModal").style.display = "none";
+            }
+
+            function clearForm() {
+                const form = document.getElementById("deliveryPartnerForm");
+                if (form) form.reset();
+
+                // Reset the location selects
+                document.getElementById("dpStateSelect").innerHTML = '<option value="">Select State</option>';
+                document.getElementById("dpCitySelect").innerHTML = '<option value="">Select City</option>';
+                document.getElementById("dpAreaSelect").innerHTML = '<option value="">Select Area</option>';
+            }
+
+            document.addEventListener("DOMContentLoaded", function () {
+                const successAlert = document.querySelector(".alert-success");
+
+                // If success message is present, show modal and clear form after a delay
+                if (successAlert && successAlert.textContent.trim() !== "") {
+                    showDeliveryPartnerForm();
+                    clearForm();
+
+                    // Hide message after 3s
+                    setTimeout(() => {
+                        successAlert.style.display = "none";
+                    }, 3000);
+                }
+            });
+        </script>
+
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                const locationData = {
+                    "India": {
+                        "West Bengal": {
+                            "Kolkata": ["Salt Lake", "Park Street", "Dumdum", "Tollygunge"],
+                            "Howrah": ["Shibpur", "Santragachi", "Belur"],
+                            "Durgapur": ["City Center", "Bidhannagar", "Benachity"]
+                        },
+                        "Maharashtra": {
+                            "Mumbai": ["Andheri", "Borivali", "Dadar", "Bandra"],
+                            "Pune": ["Shivajinagar", "Kothrud", "Hinjewadi"]
+                        }
+                    }
+                };
+
+                const countrySelect = document.getElementById("dpCountrySelect");
+                const stateSelect = document.getElementById("dpStateSelect");
+                const citySelect = document.getElementById("dpCitySelect");
+                const areaSelect = document.getElementById("dpAreaSelect");
+
+                countrySelect.addEventListener('change', populateDPStates);
+                stateSelect.addEventListener('change', populateDPCities);
+                citySelect.addEventListener('change', populateDPAreas);
+
+                function populateDPStates() {
+                    const country = countrySelect.value;
+                    stateSelect.innerHTML = '<option value="">Select State</option>';
+                    citySelect.innerHTML = '<option value="">Select City</option>';
+                    areaSelect.innerHTML = '<option value="">Select Area</option>';
+
+                    if (locationData[country]) {
+                        Object.keys(locationData[country]).forEach(state => {
+                            let option = document.createElement("option");
+                            option.value = state;
+                            option.textContent = state;
+                            stateSelect.appendChild(option);
+                        });
+                    }
+                }
+
+                function populateDPCities() {
+                    const country = countrySelect.value;
+                    const state = stateSelect.value;
+                    citySelect.innerHTML = '<option value="">Select City</option>';
+                    areaSelect.innerHTML = '<option value="">Select Area</option>';
+
+                    if (locationData[country] && locationData[country][state]) {
+                        Object.keys(locationData[country][state]).forEach(city => {
+                            let option = document.createElement("option");
+                            option.value = city;
+                            option.textContent = city;
+                            citySelect.appendChild(option);
+                        });
+                    }
+                }
+
+                function populateDPAreas() {
+                    const country = countrySelect.value;
+                    const state = stateSelect.value;
+                    const city = citySelect.value;
+                    areaSelect.innerHTML = '<option value="">Select Area</option>';
+
+                    if (
+                        locationData[country] &&
+                        locationData[country][state] &&
+                        locationData[country][state][city]
+                    ) {
+                        locationData[country][state][city].forEach(area => {
+                            let option = document.createElement("option");
+                            option.value = area;
+                            option.textContent = area;
+                            areaSelect.appendChild(option);
+                        });
+                    }
+                }
+            });
+        </script>
 </body>
 
 </html>

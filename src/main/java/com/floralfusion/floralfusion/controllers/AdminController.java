@@ -8,9 +8,11 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 
 import com.floralfusion.floralfusion.entities.Admin;
 import com.floralfusion.floralfusion.entities.Collector;
+import com.floralfusion.floralfusion.entities.DeliveryPartner;
 import com.floralfusion.floralfusion.entities.FlowerStock;
 import com.floralfusion.floralfusion.repositories.AdminRepository;
 import com.floralfusion.floralfusion.services.CollectorService;
+import com.floralfusion.floralfusion.services.DeliveryPartnerService;
 import com.floralfusion.floralfusion.services.FlowerStockService;
 
 import jakarta.servlet.http.HttpSession;
@@ -18,8 +20,7 @@ import jakarta.servlet.http.HttpSession;
 import java.util.List;
 import java.util.Optional;
 
-import jakarta.servlet.http.HttpServletResponse; 
-
+import jakarta.servlet.http.HttpServletResponse;
 
 @Controller
 @RequestMapping("/admin") // Base path for all admin routes
@@ -31,17 +32,11 @@ public class AdminController {
     @Autowired
     private CollectorService collectorService;
 
-    // @GetMapping // Handles GET /admin
-    // public String showAdminPage(Model model, @AuthenticationPrincipal Admin
-    // admin) {
-    // List<Collector> collectors = collectorService.getAllCollectors();
-    // model.addAttribute("collectors", collectors);
-    // model.addAttribute("admin", admin);
-    // return "admin_view";
-    // }
-
     @Autowired
     private FlowerStockService flowerStockService;
+
+    @Autowired
+    private DeliveryPartnerService deliveryPartnerService;
 
     @GetMapping
     public String showAdminPage(Model model, HttpSession session, HttpServletResponse response) {
@@ -64,12 +59,16 @@ public class AdminController {
 
         List<FlowerStock> flowerStockList = flowerStockService.getAllFlowerStock();
 
+        // Fetch delivery partners by the logged-in admin's ID
+        List<DeliveryPartner> deliveryPartners = deliveryPartnerService
+                .getDeliveryPartnersByAdminId(admin.getAdminID());
+
         model.addAttribute("totalCollectors", totalCollectors);
         model.addAttribute("totalStock", totalStock);
+        model.addAttribute("deliveryPartners", deliveryPartners); 
         model.addAttribute("collectors", collectorService.getAllCollectors());
         model.addAttribute("flowerStockList", flowerStockList);
         model.addAttribute("admin", admin);
-        
 
         return "admin_view";
     }
@@ -78,25 +77,6 @@ public class AdminController {
     public String showAdminLoginPage() {
         return "admin_login";
     }
-
-    // @PostMapping("/login") // Handles POST /admin/login
-    // public String processLogin(@RequestParam String email,
-    // @RequestParam String password,
-    // @RequestParam String passkey,
-    // Model model) {
-    // Optional<Admin> admin =
-    // adminRepository.findByUser_EmailAndUser_PasswordAndPasskey(email, password,
-    // passkey);
-
-    // if (admin.isPresent()) {
-    // System.out.println("Admin found: " + admin.get());
-    // return "redirect:/admin"; // Redirect to admin dashboard
-    // } else {
-    // System.out.println("Admin not found. Check credentials!");
-    // model.addAttribute("error", "Invalid credentials");
-    // return "admin_login"; // Reload login page with error
-    // }
-    // }
 
     @PostMapping("/login") // Handles POST /admin/login
     public String processLogin(@RequestParam String email,

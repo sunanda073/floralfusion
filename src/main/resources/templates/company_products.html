@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>My Products</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .product-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px; /* Reduced gap between product blocks */
+            justify-content: space-evenly;
+        }
+    
+        .product-card {
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 20px;
+            width: 220px; /* Adjust the width to make it more compact */
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+            text-align: center;
+            margin-bottom: 10px; /* Reduced margin between cards */
+        }
+    
+        .product-image {
+            width: 100%;
+            height: 150px; /* Set a fixed height for the image */
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+        }
+    
+        .product-name {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+    
+        .product-description {
+            font-size: 14px;
+            margin-bottom: 10px;
+            color: #555;
+        }
+    
+        .product-price, .product-stock {
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+    
+        .actions {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+        }
+    </style>
+    
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2>My Products</h2>
+    
+    <div class="product-container mt-4">
+        <!-- Iterate through the products list and display each product as a block -->
+        <div th:each="product : ${products}" class="product-card">
+            <!-- Display product image -->
+            <img th:src="@{${product.imageUrl}}" 
+                 alt="Product Image" 
+                 class="product-image" />
+
+            <!-- Display product details -->
+            <div class="product-name" th:text="${product.productName}">Product Name</div>
+            <div class="product-description" th:text="${product.description}">Description</div>
+            <div class="product-price" th:text="'₹ ' + ${product.price}">Price</div>
+            <div class="product-stock" th:text="'Stock: ' + ${product.stockQuantity}">Stock Quantity</div>
+
+            <!-- Actions for editing and deleting -->
+            <div class="actions">
+                <!-- Edit Button: Open the Edit Form -->
+                <a th:href="@{/company/edit-product/{id}(id=${product.productID})}" class="btn btn-outline-primary btn-sm">Edit</a>
+
+                <!-- Delete Button: Trigger deletion of the product -->
+                <form th:action="@{/company/delete-product}" method="post" onsubmit="return confirm('Are you sure you want to delete this product?');">
+                    <input type="hidden" name="productId" th:value="${product.productID}" />
+                    <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+</body>
+</html>

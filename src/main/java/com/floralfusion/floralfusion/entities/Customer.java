@@ -24,7 +24,7 @@ public class Customer {
 
     // One-to-many relationship with Order entity (Customer places many orders)
     @OneToMany(mappedBy = "customer")
-    private List<Order> orderHistory;
+    private List<CustomerOrder> orderHistory;
 
     // One-to-many relationship with Review entity (Customer writes many reviews)
     @OneToMany(mappedBy = "customer")
@@ -48,11 +48,11 @@ public class Customer {
         this.user = user;
     }
 
-    public List<Order> getOrderHistory() {
+    public List<CustomerOrder> getOrderHistory() {
         return orderHistory;
     }
 
-    public void setOrderHistory(List<Order> orderHistory) {
+    public void setOrderHistory(List<CustomerOrder> orderHistory) {
         this.orderHistory = orderHistory;
     }
 

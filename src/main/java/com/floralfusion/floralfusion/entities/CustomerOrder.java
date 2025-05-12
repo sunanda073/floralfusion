@@ -1,7 +1,14 @@
 package com.floralfusion.floralfusion.entities;
 
 import java.util.List;
+
+import com.floralfusion.floralfusion.enums.OrderStatus;
+import com.floralfusion.floralfusion.enums.PaymentStatus;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,7 +20,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "orders")
-public class Order {
+public class CustomerOrder {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,17 +36,19 @@ public class Order {
 
     // One-to-One relationship with Payment
     @OneToOne
-    @JoinColumn(name = "paymentID")
+    @JoinColumn(name = "paymentid")
     private Payment payment;
 
     // One-to-Many relationship with OrderItems
     @OneToMany(mappedBy = "order")
     private List<OrderItem> orderItems;
 
-    // New attributes
-    private String orderStatus;       // Order status (e.g., "Processing", "Shipped", "Delivered")
-    private String paymentStatus;     // Payment status (e.g., "Paid", "Pending", "Failed")
-    private String shippingAddress;   // Shipping address for the order
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus; // Use Enum for order status
+
+    @Enumerated(EnumType.STRING)
+    private PaymentStatus paymentStatus; // Use Enum for payment status
+    private String shippingAddress; // Shipping address for the order
 
     // Getters and Setters
     public Long getOrderID() {
@@ -90,19 +99,19 @@ public class Order {
         this.orderItems = orderItems;
     }
 
-    public String getOrderStatus() {
+    public OrderStatus getOrderStatus() {
         return orderStatus;
     }
 
-    public void setOrderStatus(String orderStatus) {
+    public void setOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
     }
 
-    public String getPaymentStatus() {
+    public PaymentStatus getPaymentStatus() {
         return paymentStatus;
     }
 
-    public void setPaymentStatus(String paymentStatus) {
+    public void setPaymentStatus(PaymentStatus paymentStatus) {
         this.paymentStatus = paymentStatus;
     }
 
